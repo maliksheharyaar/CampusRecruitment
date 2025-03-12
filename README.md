@@ -2,7 +2,7 @@
 
 A 3D web-based interactive demo showcasing a university campus environment where players can explore and interact with buildings. Built with Unity and optimized for WebGL deployment.
 
-# Hosted at https://maliksheharyaar.github.io/my-unity-webgl-game/
+**[Play the Demo](https://maliksheharyaar.github.io/my-unity-webgl-game/)**
 
 ## 🎮 Features
 
@@ -50,42 +50,8 @@ A 3D web-based interactive demo showcasing a university campus environment where
   - Position update counter
   - Error handling for invalid positions
 
-## 🔧 Technical Implementation
 
-### Core Systems
-1. **Position Management System**
-   ```csharp
-   public static class PlayerPositionManager
-   {
-       private static Vector3 lastPosition = Vector3.zero;
-       private static bool hasStoredPosition = false;
-       private static bool isTransitionInProgress = false;
-   }
-   ```
-
-2. **Building Interaction System**
-   ```csharp
-   public class BuildingInteraction : MonoBehaviour
-   {
-       [SerializeField] private float interactionDistance = 3f;
-       private Vector3 interactionPoint;
-       private bool isInRange = false;
-   }
-   ```
-
-3. **Cursor Management System**
-   ```csharp
-   public class CursorManager : MonoBehaviour
-   {
-       private void LockCursor()
-       {
-           Cursor.lockState = CursorLockMode.Locked;
-           Cursor.visible = false;
-       }
-   }
-   ```
-
-### Optimization
+### 🔧 Optimization
 - WebGL-specific optimizations
 - Scene loading optimization
 - Memory management
@@ -168,3 +134,41 @@ A 3D web-based interactive demo showcasing a university campus environment where
 ## 📝 Development Notes
 
 ### Script Dependencies
+
+## 🚀 Deployment
+
+### GitHub Pages Setup
+1. Build WebGL project
+2. Configure repository settings
+3. Enable GitHub Pages
+4. Set build folder as source
+
+### Build Optimization
+- Disabled compression (GitHub Pages handles this)
+- Minimal memory allocation
+- Optimized asset loading
+- Browser compatibility checks
+
+## 📦 Future Updates
+- [ ] Additional building interactions
+- [ ] Mini-game implementation
+- [ ] Enhanced UI feedback
+- [ ] More campus areas
+- [ ] Character customization options
+
+
+### Important Considerations for now
+1. **Position Management**:
+   - Position is saved before scene transitions
+   - Validation occurs during save/load
+   - Automatic cleanup after position restoration
+
+2. **Scene Transitions**:
+   - Cursor state changes automatically
+   - Position data persists through static manager
+   - Scene loading handles edge cases
+
+3. **Debugging**:
+   - Console logs track position updates
+   - Visual feedback in Scene view
+   - Inspector debugging tools available
