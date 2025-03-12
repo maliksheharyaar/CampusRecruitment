@@ -3,6 +3,7 @@
 A 3D web-based interactive demo showcasing a university campus environment where players can explore and interact with buildings. Built with Unity and optimized for WebGL deployment.
 
 **[Play the Demo](https://maliksheharyaar.github.io/my-unity-webgl-game/)**
+**IMPORTANT**: Make sure to click the within the game after launching to bound mouse to center of the screen to allow continuous character rotation. Press "ESC" to unbound the mouse
 
 ## 🎮 Features
 
