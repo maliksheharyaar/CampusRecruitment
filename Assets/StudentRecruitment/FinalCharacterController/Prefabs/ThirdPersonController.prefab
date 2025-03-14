@@ -3801,12 +3801,12 @@ MonoBehaviour:
   walkAcceleration: 25
   walkSpeed: 3
   runAcceleration: 35
-  runSpeed: 5
+  runSpeed: 6.19
   sprintAcceleration: 50
   sprintSpeed: 8
   drag: 20
   gravity: 25
-  jumpSpeed: 2
+  jumpSpeed: 1.5
   movingThreshold: 0.01
   playerModelRotationSpeed: 10
   rotateToTargetTime: 0.67

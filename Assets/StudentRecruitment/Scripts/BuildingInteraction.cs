@@ -10,6 +10,7 @@ public class BuildingInteraction : MonoBehaviour
     private Transform playerTransform;
     private Vector3 interactionPoint;
     private bool isTransitioning = false;
+    private InteractionMarker marker;
 
     private void Awake()
     {
@@ -27,6 +28,12 @@ public class BuildingInteraction : MonoBehaviour
     {
         FindPlayer();
         SetupInteractionPoint();
+        marker = GetComponentInChildren<InteractionMarker>();
+        
+        if (marker == null)
+        {
+            Debug.LogError("InteractionMarker not found! Make sure it's set up as a child of the building.");
+        }
     }
 
     private void FindPlayer()
@@ -64,9 +71,19 @@ public class BuildingInteraction : MonoBehaviour
         }
 
         float distance = Vector3.Distance(interactionPoint, playerTransform.position);
+        bool wasInRange = isInRange;
         isInRange = distance <= interactionDistance;
 
-        if (isInRange && Input.GetKeyDown(KeyCode.E))
+        // Update marker visibility when range status changes
+        if (isInRange != wasInRange && marker != null)
+        {
+            marker.SetMarkerVisibility(isInRange);
+        }
+    }
+
+    public void OnInteractionTriggered()
+    {
+        if (isInRange && !isTransitioning)
         {
             AttemptTransition();
         }
@@ -82,7 +99,6 @@ public class BuildingInteraction : MonoBehaviour
             isTransitioning = true;
             PlayerPositionManager.StorePosition(currentPosition);
             
-            // Double-check that position was stored successfully
             if (PlayerPositionManager.HasStoredPosition())
             {
                 StartCoroutine(LoadSceneAsync());
@@ -100,10 +116,8 @@ public class BuildingInteraction : MonoBehaviour
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(targetSceneName);
         asyncLoad.allowSceneActivation = false;
 
-        // Wait a frame to ensure position is properly stored
         yield return new WaitForEndOfFrame();
 
-        // Double check position is stored before allowing scene transition
         if (PlayerPositionManager.HasStoredPosition())
         {
             Debug.Log("Position verified, proceeding with scene transition");
@@ -144,5 +158,10 @@ public class BuildingInteraction : MonoBehaviour
             // Handle errors gracefully in WebGL
             // Maybe show a UI message instead of just logging
         #endif
+    }
+
+    public Vector3 GetInteractionPoint()
+    {
+        return interactionPoint;
     }
 }
