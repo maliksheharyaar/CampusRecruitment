@@ -2079,6 +2079,31 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1528518066}
     m_Modifications:
+    - target: {fileID: 2025017731751971484, guid: f3409254d17b18c4ab2cf19441adba81,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2025017731751971484, guid: f3409254d17b18c4ab2cf19441adba81,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2025017731751971484, guid: f3409254d17b18c4ab2cf19441adba81,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2025017731751971484, guid: f3409254d17b18c4ab2cf19441adba81,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2025017731751971484, guid: f3409254d17b18c4ab2cf19441adba81,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 180
+      objectReference: {fileID: 0}
     - target: {fileID: 3026854799670916278, guid: f3409254d17b18c4ab2cf19441adba81,
         type: 3}
       propertyPath: m_Pivot.x
@@ -2183,6 +2208,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: QuestMarker
+      objectReference: {fileID: 0}
+    - target: {fileID: 7362316753179943982, guid: f3409254d17b18c4ab2cf19441adba81,
+        type: 3}
+      propertyPath: promptSize.x
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 7362316753179943982, guid: f3409254d17b18c4ab2cf19441adba81,
+        type: 3}
+      propertyPath: promptSize.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7362316753179943982, guid: f3409254d17b18c4ab2cf19441adba81,
+        type: 3}
+      propertyPath: webGLOptimized
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

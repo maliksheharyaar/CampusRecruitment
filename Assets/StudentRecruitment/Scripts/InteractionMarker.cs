@@ -36,6 +36,7 @@ public class InteractionMarker : MonoBehaviour
     // Performance optimization - cache squared distances to avoid sqrt operations
     [Header("Performance")]
     [SerializeField] private bool useSquaredDistanceCheck = true;
+    [SerializeField] private bool webGLOptimized = true; // Enable special optimizations for WebGL
     
     private Transform playerTransform;
     private Vector3 basePosition;
@@ -57,6 +58,7 @@ public class InteractionMarker : MonoBehaviour
     private Vector2 anchoredPosition = Vector2.zero;
     private Vector3 lookPosition = Vector3.zero;
     private GameObject promptGameObject;
+    private RectTransform promptRectTransform;
 
     private void Awake()
     {
@@ -89,31 +91,37 @@ public class InteractionMarker : MonoBehaviour
 
     private void SetupPromptText()
     {
+        // Check if markerCanvas exists first
+        if (markerCanvas == null)
+        {
+            Debug.LogError("MarkerCanvas is not assigned! Cannot setup prompt text.");
+            return;
+        }
+        
+        // Create or get the prompt text object
         if (promptText == null)
         {
-            // Create prompt text if not assigned
-            promptGameObject = new GameObject("InteractionPrompt");
+            // Create a simple text object as a child of the marker canvas
+            promptGameObject = new GameObject("PromptText");
             promptGameObject.transform.SetParent(markerCanvas.transform, false);
             
-            // Add a separate canvas for the text to ensure proper orientation
-            Canvas textCanvas = promptGameObject.AddComponent<Canvas>();
-            textCanvas.renderMode = RenderMode.WorldSpace;
+            // Add text component
+            promptText = promptGameObject.AddComponent<Text>();
             
-            // Add a canvas scaler to maintain consistent size
-            CanvasScaler scaler = promptGameObject.AddComponent<CanvasScaler>();
-            scaler.dynamicPixelsPerUnit = 100;
-            
-            // Create a child object for the text to ensure proper layering
-            GameObject textObj = new GameObject("Text");
-            textObj.transform.SetParent(promptGameObject.transform, false);
-            promptText = textObj.AddComponent<Text>();
-            
-            // Ensure the text faces the camera correctly
-            promptGameObject.transform.localRotation = Quaternion.identity;
+            // Add rect transform
+            promptRectTransform = promptText.GetComponent<RectTransform>();
         }
         else
         {
             promptGameObject = promptText.gameObject;
+            promptRectTransform = promptText.GetComponent<RectTransform>();
+        }
+        
+        // Ensure we have a valid promptGameObject and promptText
+        if (promptGameObject == null || promptText == null)
+        {
+            Debug.LogError("Failed to create or find prompt text components!");
+            return;
         }
         
         // Setup text component
@@ -122,6 +130,8 @@ public class InteractionMarker : MonoBehaviour
         promptText.alignment = promptAlignment;
         promptText.color = promptColor;
         promptText.fontStyle = promptFontStyle;
+        promptText.horizontalOverflow = HorizontalWrapMode.Overflow;
+        promptText.verticalOverflow = VerticalWrapMode.Overflow;
         
         // Set custom font if assigned
         if (promptFont != null)
@@ -129,9 +139,45 @@ public class InteractionMarker : MonoBehaviour
             promptText.font = promptFont;
         }
         
-        // Setup outline if enabled
-        if (useOutline)
+        // Position below the marker
+        if (promptRectTransform != null)
         {
+            promptRectTransform.anchoredPosition = anchoredPosition;
+            promptRectTransform.sizeDelta = promptSize;
+        }
+        
+        // For WebGL, use a simpler approach with a fixed local position
+        if (webGLOptimized && promptGameObject != null)
+        {
+            // Make text more readable in WebGL
+            promptText.fontSize = Mathf.Max(promptFontSize, 16); // Ensure minimum size
+            
+            // Make text more visible by adding a shadow instead of outline or background
+            Shadow textShadow = promptText.GetComponent<Shadow>();
+            if (textShadow == null && useOutline)
+            {
+                textShadow = promptText.gameObject.AddComponent<Shadow>();
+                textShadow.effectColor = outlineColor;
+                textShadow.effectDistance = new Vector2(1, -1);
+            }
+            
+            // Remove any existing background objects
+            Transform existingBg = promptGameObject.transform.Find("Background");
+            if (existingBg != null)
+            {
+                Destroy(existingBg.gameObject);
+            }
+            
+            // Remove any existing outline
+            Outline outline = promptText.GetComponent<Outline>();
+            if (outline != null)
+            {
+                Destroy(outline);
+            }
+        }
+        else if (useOutline && !webGLOptimized)
+        {
+            // Setup outline if enabled and not in WebGL optimized mode
             Outline outline = promptText.GetComponent<Outline>();
             if (outline == null)
             {
@@ -139,26 +185,35 @@ public class InteractionMarker : MonoBehaviour
             }
             outline.effectColor = outlineColor;
             outline.effectDistance = new Vector2(outlineThickness, outlineThickness);
+            
+            // Remove any shadow
+            Shadow textShadow = promptText.GetComponent<Shadow>();
+            if (textShadow != null)
+            {
+                Destroy(textShadow);
+            }
         }
         else
         {
+            // Remove both outline and shadow if not needed
             Outline outline = promptText.GetComponent<Outline>();
             if (outline != null)
             {
                 Destroy(outline);
             }
+            
+            Shadow textShadow = promptText.GetComponent<Shadow>();
+            if (textShadow != null)
+            {
+                Destroy(textShadow);
+            }
         }
         
-        // Position below the marker
-        RectTransform rectTransform = promptText.GetComponent<RectTransform>();
-        rectTransform.anchoredPosition = anchoredPosition;
-        rectTransform.sizeDelta = promptSize;
-        
-        // Set the proper scale for the text
-        promptGameObject.transform.localScale = Vector3.one;
-        
         // Ensure prompt starts hidden
-        promptGameObject.SetActive(false);
+        if (promptGameObject != null)
+        {
+            promptGameObject.SetActive(false);
+        }
     }
 
     private void SetupButton()
@@ -199,6 +254,10 @@ public class InteractionMarker : MonoBehaviour
         {
             markerCanvas.renderMode = RenderMode.WorldSpace;
             markerCanvas.transform.localScale = Vector3.one * markerScale;
+        }
+        else
+        {
+            Debug.LogError("MarkerCanvas is not assigned! Please assign a Canvas in the inspector.");
         }
     }
 
@@ -281,7 +340,7 @@ public class InteractionMarker : MonoBehaviour
 
     private void UpdateVisuals()
     {
-        if (!markerCanvas.gameObject.activeSelf) return;
+        if (markerCanvas == null || !markerCanvas.gameObject.activeSelf) return;
 
         // Update position with bobbing motion - optimize sin calculation
         basePosition.y = initialY + Mathf.Sin(Time.time * bobSpeed) * bobAmount;
@@ -294,12 +353,6 @@ public class InteractionMarker : MonoBehaviour
             lookPosition = mainCamera.transform.position;
             lookPosition.y = transform.position.y; // Keep y level consistent
             transform.LookAt(lookPosition);
-            
-            // Make prompt text face camera directly
-            if (promptGameObject != null && promptGameObject.activeSelf)
-            {
-                promptGameObject.transform.rotation = mainCamera.transform.rotation;
-            }
         }
     }
 
