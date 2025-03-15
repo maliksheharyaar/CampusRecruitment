@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Autodesk.Fbx;
 using UnityEditor;
 using UnityEngine;
 
@@ -22,8 +23,10 @@ namespace StudentRecruitment.FinalCharacterController
         public float runSpeed = 7f;
         public float sprintAcceleration = 50f;
         public float sprintSpeed = 10f;
+        public float inAirAcceleration = 0.15f;
         public float drag = 0.1f;
         public float gravity = 25f;
+        public float terminalVelocity = 50f;
         public float jumpSpeed = 1.0f;
         public float movingThreshold = 0.01f;
 
@@ -37,6 +40,8 @@ namespace StudentRecruitment.FinalCharacterController
         public float lookSensV = 0.1f;
         public float lookLimitV = 89f;
 
+        [Header("Enivronment Details")]
+        [SerializeField] private LayerMask _groundedLayers;
 
         private PlayerLocomotionInput _playerLocomotionInput;
         private PlayerState _playerState;
@@ -44,9 +49,14 @@ namespace StudentRecruitment.FinalCharacterController
         private Vector2 _cameraRotation = Vector2.zero;
         private Vector2 _playerTargetRotation = Vector2.zero;
 
+        private bool _jumpedLastFrame = false;
         private bool _isRotatingClockwise = false;
         private float _rotatingToTargetTimer = 0f;
         private float _verticalVelocity = 0f;
+        private float _antiBump;
+        private float _stepOffset;
+
+        private PlayerMovementState _lastMovementState = PlayerMovementState.Falling;
         #endregion
 
         #region Startup
@@ -54,6 +64,9 @@ namespace StudentRecruitment.FinalCharacterController
         {
             _playerLocomotionInput = GetComponent<PlayerLocomotionInput>();
             _playerState = GetComponent<PlayerState>();
+
+            _antiBump = sprintSpeed; //To avoid skipping when falling down a slope
+            _stepOffset = _characterController.stepOffset;
         }
         #endregion
 
@@ -67,6 +80,8 @@ namespace StudentRecruitment.FinalCharacterController
 
         private void UpdateMovementState()
         {
+
+            _lastMovementState = _playerState.CurrentPlayerMovementState;
             bool canRun = CanRun();
             bool isMovementInput = _playerLocomotionInput.MovementInput != Vector2.zero; //Order of operations is important here
             bool isMovingLaterally = IsMovingLaterally();//Order of operations is important here
@@ -82,30 +97,50 @@ namespace StudentRecruitment.FinalCharacterController
             _playerState.SetPlayerMovementState(lateralState);
 
             //Manage the airborne state
-            if (!isGrounded && _characterController.velocity.y >= 0f)
+            if ((!isGrounded || _jumpedLastFrame) && _characterController.velocity.y >= 0f)
             {
                 _playerState.SetPlayerMovementState(PlayerMovementState.Jumping);
+                _jumpedLastFrame = false;
+                _characterController.stepOffset = 0f;
             }
-            else if (!isGrounded && _characterController.velocity.y < 0f)
+            else if ((!isGrounded || _jumpedLastFrame) && _characterController.velocity.y <= 0f)
             {
                 _playerState.SetPlayerMovementState(PlayerMovementState.Falling);
+                _jumpedLastFrame = false;
+                _characterController.stepOffset = 0f;
+            }
+            else
+            {
+                _characterController.stepOffset = _stepOffset;
             }
         }
 
         private void HandleVerticalMovement()
         {
+
             bool isGrounded = _playerState.InGroundedState();
-            if (isGrounded && _verticalVelocity < 0)
-                _verticalVelocity = 0f;
 
             _verticalVelocity -= gravity * Time.deltaTime;
 
+            if (isGrounded && _verticalVelocity < 0)
+                _verticalVelocity = -_antiBump;
+
+
             if (_playerLocomotionInput.JumpPressed && isGrounded)
             {
-                _verticalVelocity += Mathf.Sqrt(jumpSpeed * 3 * gravity);
+                _verticalVelocity +=  Mathf.Sqrt(jumpSpeed * 3 * gravity);
+                _jumpedLastFrame = true;
             }
 
+            if(_playerState.IsStateGroundedState(_lastMovementState) && !isGrounded)
+            {
+                _verticalVelocity += _antiBump;
+            }
 
+            if(Mathf.Abs(_verticalVelocity) > Mathf.Abs(terminalVelocity))
+            {
+                _verticalVelocity = -1f * Mathf.Abs(terminalVelocity);
+            }
 
         }
 
@@ -117,11 +152,11 @@ namespace StudentRecruitment.FinalCharacterController
             bool isWalking = _playerState.CurrentPlayerMovementState == PlayerMovementState.Walking;
 
             //Set acceleration and clamp magnitude
-            float lateralAcceleration = 
+            float lateralAcceleration = !isGrounded ? inAirAcceleration :
                         isWalking ? walkAcceleration : 
                         isSprinting ? sprintAcceleration : runAcceleration;
 
-            float clampLateralMagnitude = 
+            float clampLateralMagnitude = !isGrounded ? sprintSpeed :
                         isWalking ? walkSpeed : 
                         isSprinting ? sprintSpeed : runSpeed;
             
@@ -137,11 +172,27 @@ namespace StudentRecruitment.FinalCharacterController
             // Add drag to player
             Vector3 currentDrag = newVelocity.normalized * drag;
             newVelocity = (newVelocity.magnitude > drag) ? newVelocity - currentDrag : Vector3.zero;
-            newVelocity = Vector3.ClampMagnitude(newVelocity, clampLateralMagnitude);
+            newVelocity = Vector3.ClampMagnitude(new Vector3(newVelocity.x, 0f, newVelocity.z), clampLateralMagnitude);
             newVelocity.y = _verticalVelocity;
+            newVelocity = !isGrounded ? HandleSteepWalls(newVelocity) : newVelocity;
 
             //Move character (Unity suggests only calling this once per tick)
             _characterController.Move(newVelocity * Time.deltaTime);
+        }
+
+        private Vector3 HandleSteepWalls(Vector3 velocity)
+        {
+            Vector3 normal = CharacterControllerUtils.GetNormalWithSphereCast(_characterController, _groundedLayers);
+
+            float angle = Vector3.Angle(normal, Vector3.up);
+
+            bool validAngle = angle <= _characterController.slopeLimit;
+
+            if (!validAngle && _verticalVelocity < 0f)
+                velocity = Vector3.ProjectOnPlane(velocity, normal);
+            
+            return velocity;
+            
         }
         #endregion
 
@@ -224,6 +275,28 @@ namespace StudentRecruitment.FinalCharacterController
 
         private bool IsGrounded()
         {
+            bool grounded = _playerState.InGroundedState() ? IsGroundedWhileGrounded() : IsGroundedWhileAirborne();
+
+            return grounded;
+        }
+
+        private bool IsGroundedWhileGrounded()
+        {
+            Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - _characterController.radius, transform.position.z);
+
+            bool grounded = Physics.CheckSphere(spherePosition, _characterController.radius, _groundedLayers, QueryTriggerInteraction.Ignore);
+
+            return grounded;
+        }
+
+        private bool IsGroundedWhileAirborne()
+        {
+            Vector3 normal = CharacterControllerUtils.GetNormalWithSphereCast(_characterController, _groundedLayers);
+
+            float angle = Vector3.Angle(normal, Vector3.up);
+
+            bool validAngle = angle <= _characterController.slopeLimit;
+
             return _characterController.isGrounded;
         }
 

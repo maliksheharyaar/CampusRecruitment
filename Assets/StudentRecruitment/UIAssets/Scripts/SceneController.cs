@@ -5,31 +5,73 @@ using UnityEngine.SceneManagement;
 public class SceneController : MonoBehaviour
 {
     [SerializeField] private string mainSceneName = "MainScene";
-    [SerializeField] private string miniGameSceneName = "MiniGame"; //  To be implemented later
+    [SerializeField] private string miniGameSceneName = "MiniGame"; // To be implemented later
+
+    private void OnEnable()
+    {
+        // Subscribe to scene load events
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        // Unsubscribe from scene load events
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Clean up any lingering materials
+        CleanupMaterials();
+    }
+
+    private void CleanupMaterials()
+    {
+        // Find and cleanup any temporary materials
+        var materials = FindObjectsOfType<Material>();
+        foreach (var material in materials)
+        {
+            if (material != null && material.name.Contains("Temporary"))
+            {
+                DestroyImmediate(material);
+            }
+        }
+    }
 
     public void ReturnToMainScene()
     {
-        // Show loading UI here if needed
-        StartCoroutine(LoadSceneAsync("MainScene"));
+        StartCoroutine(LoadSceneAsync(mainSceneName));
     }
 
     private IEnumerator LoadSceneAsync(string sceneName)
     {
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        // Clean up before loading
+        CleanupMaterials();
 
-        // Optional: Show loading progress
-        while (!asyncLoad.isDone)
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        asyncLoad.allowSceneActivation = false;
+
+        // Wait until the scene is ready
+        while (asyncLoad.progress < 0.9f)
         {
             float progress = Mathf.Clamp01(asyncLoad.progress / 0.9f);
             // Update loading UI if you have one
             yield return null;
         }
+        
+        asyncLoad.allowSceneActivation = true;
     }
 
     public void LaunchMiniGame()
     {
-        // For future implementation
-        Debug.Log("Mini game will be implemented later");
-        // SceneManager.LoadScene(miniGameSceneName);
+        if (string.IsNullOrEmpty(miniGameSceneName))
+        {
+            Debug.LogError("Mini game scene name is not set!");
+            return;
+        }
+
+        // Clean up before loading
+        CleanupMaterials();
+        StartCoroutine(LoadSceneAsync(miniGameSceneName));
     }
 }
