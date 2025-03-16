@@ -59,6 +59,9 @@ A 3D web-based interactive demo showcasing a university campus environment where
 - Position validation system
 - Error handling for WebGL context
 
+## UML Overview
+![UML Diagram](UML/ProjectOverview.png)
+
 ## 🚀 Setup Instructions
 
 ### Prerequisites
