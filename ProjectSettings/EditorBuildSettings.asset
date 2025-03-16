@@ -6,12 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/CharacterDialogueTestScene.unity
+    guid: e8e9590b21e14be4093b67e9b51272d3
+  - enabled: 1
     path: Assets/Scenes/MainScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
     path: Assets/Scenes/CanvasTestScene.unity
     guid: f49b3fb173f2634489c2f4d1ac68d125
-  - enabled: 1
-    path: Assets/Scenes/CharacterDialogueTestScene.unity
-    guid: e8e9590b21e14be4093b67e9b51272d3
   m_configObjects: {}
