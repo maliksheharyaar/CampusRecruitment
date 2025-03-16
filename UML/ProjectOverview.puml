@@ -1,0 +1,425 @@
+@startuml StudentRecruitmentProjectArchitecture
+
+' Define custom styles
+skinparam packageStyle rectangle
+skinparam classBackgroundColor LightBlue
+skinparam classBorderColor NavyBlue
+skinparam arrowColor DarkBlue
+skinparam stereotypeCBackgroundColor YellowGreen
+skinparam stereotypeIBackgroundColor LightGreen
+
+' Main package definitions
+package "Core Scene Management" #LightYellow {
+    class SceneController {
+        ' Properties
+        - string mainSceneName = "MainScene"
+        - string miniGameSceneName = "MiniGame"
+        - static bool isTransitioning
+        
+        ' Methods
+        + void ReturnToMainScene() : "Load main scene"
+        + void LaunchMiniGame() : "Load mini-game scene"
+        - void OnSceneLoaded(Scene, LoadSceneMode) : "Scene load callback"
+        - void CleanupMaterials() : "Clear temp materials"
+        - void ForceUnlockCursor() : "Ensure cursor is visible"
+        
+        .. Scene lifecycle ..
+        + void OnEnable() : "Register scene events"
+        + void OnDisable() : "Unregister events"
+        + void Start() : "Initialize controller"
+        
+        .. Responsibilities ..
+        * Manage scene transitions
+        * Handle loading screens
+        * Reset cursor state between scenes
+    }
+    
+    class CursorManager {
+        ' Properties
+        - string currentSceneName
+        - bool lockCursorInThisScene
+        - bool startWithCursorLocked
+        - bool isInDialog
+        - bool hasInitialized
+        - bool isPersistentManager
+        + {static} CursorManager Instance
+        
+        ' Methods
+        + void SetDialogMode(bool inDialog) : "Set dialog state"
+        + void LockCursor() : "Lock and hide cursor" 
+        + void UnlockCursor() : "Unlock and show cursor"
+        - void ForceUnlockCursor() : "Emergency cursor reset"
+        - void InitializeCursor() : "Setup cursor state"
+        
+        .. Cursor lifecycle ..
+        + void Awake() : "Initialize manager"
+        + void Start() : "Setup initial state"
+        + void Update() : "Process input events"
+        
+        .. Responsibilities ..
+        * Manage cursor visibility
+        * Handle Escape key toggling
+        * Support dialog mode
+        * Track scene-specific settings
+    }
+}
+
+package "Character System" #LightPink {
+    package "Player Controller" #LightCyan {
+        class PlayerController {
+            ' Core properties
+            - CharacterController _characterController
+            - Camera _playerCamera
+            + float RotationMismatch
+            + bool IsRotatingToTarget
+            
+            ' Movement parameters
+            - float walkAcceleration = 25f
+            - float walkSpeed = 4f
+            - float runAcceleration = 35f
+            - float runSpeed = 7f
+            - float sprintAcceleration = 50f
+            - float sprintSpeed = 10f
+            - float gravity = 25f
+            - float jumpSpeed = 1.0f
+            
+            ' Camera settings
+            - float lookSensH = 0.1f
+            - float lookSensV = 0.1f
+            - float lookLimitV = 89f
+            
+            ' Methods
+            - void UpdateCameraRotation() : "Handle camera movement"
+            - void UpdateMovement() : "Process movement input"
+            - void ApplyGravity() : "Apply gravity forces"
+            - void HandleJump() : "Process jump input"
+            
+            .. Player lifecycle ..
+            + void Update() : "Main update loop"
+            + void LateUpdate() : "Camera updates"
+            
+            .. Responsibilities ..
+            * Main player movement control
+            * Camera control and rotation
+            * Physics interaction
+            * Input processing delegation
+        }
+        
+        class PlayerAnimation {
+            ' Properties
+            - Animator _animator
+            - PlayerState _playerState
+            - bool isGrounded
+            - bool wasGrounded
+            
+            ' Methods
+            - void ProcessAnimations() : "Update animation states"
+            - void HandleLandingAnimation() : "Play landing animation"
+            - void SetAnimationParams() : "Set animator parameters"
+            
+            .. Animation lifecycle ..
+            + void Update() : "Update animations"
+            
+            .. Responsibilities ..
+            * Manage player animations
+            * Sync animations with movement
+            * Handle transition states
+        }
+                  
+          class PlayerState {
+              ' Enums
+              + enum PlayerMovementState
+              
+              ' Properties
+              + PlayerMovementState : CurrentPlayerMovementState
+              - boolean isGrounded
+              - boolean isJumping
+              
+              ' Methods
+              - void UpdateStateBasedOnInput() : "Update movement state"
+              + void SetJumpState() : "Enter jumping state"
+              + void SetGroundedState(boolean) : "Update grounded state"
+              
+              .. Responsibilities ..
+              * Track player state
+              * Notify state changes
+              * Maintain state logic
+          }
+        
+        class PlayerLocomotionInput {
+            ' Properties
+            + Vector2 MovementInput
+            + Vector2 LookInput
+            - float inputSmoothing
+            
+            ' Methods
+            - void ProcessKeyboardInput() : "Process WASD input"
+            - void ProcessMouseInput() : "Process mouse movement"
+            + void GetInput() : "Update input values"
+            
+            .. Input lifecycle ..
+            + void Update() : "Poll for input"
+            
+            .. Responsibilities ..
+            * Handle keyboard movement
+            * Process mouse look input
+            * Smooth input values
+        }
+        
+        class CharacterControllerUtils {
+            ' Static utility methods
+            + {static} bool IsGrounded(CharacterController) : "Check if grounded"
+            + {static} float GetFallDistance(CharacterController) : "Get fall height"
+            + {static} void StopVerticalMovement(CharacterController) : "Zero vertical velocity"
+            
+            .. Responsibilities ..
+            * Provide utility functions
+            * Handle common calculations
+        }
+    }
+    
+    package "Player Management" #FFD0D0 {
+        class PlayerSpawnHandler {
+            ' Properties
+            - Transform defaultSpawnPoint
+            - bool useStoredPosition = true
+            
+            ' Methods
+            + void SpawnPlayer() : "Spawn player in scene"
+            - void SetPlayerPosition() : "Position player at spawn"
+            - Transform FindSpawnPoint() : "Find valid spawn point"
+            
+            .. Spawn lifecycle ..
+            + void Start() : "Initialize and spawn"
+            
+            .. Responsibilities ..
+            * Spawn player in new scenes
+            * Restore player position
+            * Find valid spawn locations
+        }
+        
+        class "PlayerPositionManager" << static utility >> {
+            ' Static properties
+            - {static} Vector3 lastPosition
+            - {static} bool hasStoredPosition
+            - {static} bool isTransitionInProgress
+            
+            ' Static methods
+            + {static} void StorePosition(Vector3) : "Save player position"
+            + {static} Vector3 GetLastPosition() : "Retrieve saved position"
+            + {static} bool HasStoredPosition() : "Check if position saved"
+            + {static} void ClearStoredPosition() : "Reset stored position"
+            
+            .. Responsibilities ..
+            * Persist position between scenes
+            * Validate position data
+            * Track position history
+        }
+        
+        class PersistentObject {
+            ' Properties
+            - string id : "Unique identifier"
+            
+            ' Methods
+            + void Awake() : "Set as persistent"
+            
+            .. Responsibilities ..
+            * Persist between scene loads
+            * Prevent duplicate instances
+        }
+        
+        class PlayerPositionDebugger {
+            ' Debug properties
+            - bool showDebugUI = true
+            - string lastStoredPosition
+            
+            ' Methods
+            + void OnGUI() : "Show debug overlay"
+            - void UpdateDebugInfo() : "Update position info"
+            
+            .. Responsibilities ..
+            * Debug position persistence
+            * Display spawn information
+        }
+    }
+}
+
+package "Interaction System" #LightGreen {
+    class InteractionMarker {
+        ' Core properties
+        - float interactionDistance = 3f
+        - float visibilityDistance = 5f
+        - string targetSceneName = "CanvasTestScene"
+        - KeyCode interactionKey = KeyCode.E
+        
+        ' UI elements
+        - Canvas markerCanvas
+        - Button markerButton
+        - Text promptText
+        - string promptMessage = "Press E to interact"
+        
+        ' State tracking
+        - bool isInRange
+        - bool isInInteractionRange
+        - UnityEvent onClick
+        - bool isTransitioning
+        
+        ' Methods
+        + void SetMarkerVisibility(bool) : "Show/hide marker"
+        - void OnInteractionTriggered() : "Handle interaction"
+        - void SetupButton() : "Initialize button"
+        - IEnumerator LoadSceneAsync() : "Load target scene"
+        
+        .. Marker lifecycle ..
+        + void Start() : "Initialize marker"
+        + void Update() : "Check player distance"
+        
+        .. Responsibilities ..
+        * Provide visual interaction cue
+        * Detect player proximity
+        * Handle E key press
+        * Trigger scene transitions
+    }
+    
+    class BuildingInteraction {
+        ' Core properties
+        - float interactionDistance = 3f
+        - string targetSceneName = "CanvasTestScene"
+        - InteractionMarker marker
+        
+        ' State tracking
+        - bool isInRange
+        - bool isTransitioning
+        - Transform playerTransform
+        
+        ' Methods
+        + void OnInteractionTriggered() : "Handle building interaction"
+        - void AttemptTransition() : "Try to transition scene"
+        - IEnumerator LoadSceneAsync() : "Load target scene"
+        - void FindPlayer() : "Locate player in scene"
+        
+        .. Building lifecycle ..
+        + void Start() : "Initialize interaction"
+        + void Update() : "Check player proximity"
+        
+        .. Responsibilities ..
+        * Detect player near buildings
+        * Create floating markers
+        * Store player position
+        * Trigger scene transitions
+    }
+    
+    class ButtonSoundController {
+        ' Audio properties
+        - AudioClip clickSound
+        - float volume = 1f
+        - AudioSource audioSource
+        - bool playOnPointerDown = false
+        
+        ' Methods
+        - void PlayClickSound() : "Play button sound"
+        - void SetupAudioSource() : "Create audio source"
+        
+        .. Button lifecycle ..
+        + void Awake() : "Initialize controller"
+        + void OnDestroy() : "Clean up listeners"
+        
+        .. Responsibilities ..
+        * Play sounds on button clicks
+        * Manage button audio sources
+        * Clean up event listeners
+    }
+}
+
+package "Dialog System" #LightSalmon {
+    class ConversationStarter {
+        ' Core properties
+        - NPCConversation _conversation
+        - KeyCode interactionKey = KeyCode.E
+        - GameObject interactionPrompt
+        
+        ' State tracking
+        - PlayerController _playerController
+        - GameObject _playerObject
+        - bool _isInConversation
+        - CursorManager _cursorManager
+        
+        ' Methods
+        - void StartConversation() : "Begin NPC dialog"
+        - void HandleConversationEnd() : "End dialog callback"
+        
+        .. Conversation lifecycle ..
+        + void OnEnable() : "Register dialog events"
+        + void OnDisable() : "Unregister events"
+        + void OnTriggerStay() : "Check for E key press"
+        
+        .. Responsibilities ..
+        * Start NPC conversations
+        * Hide player during dialog
+        * Manage dialog cursor state
+        * Handle conversation end
+    }
+    
+    class "DialogueEditor" << external system >> {
+        ' External API
+        + ConversationManager.Instance
+        + OnConversationEnded event
+        + StartConversation(NPCConversation)
+        
+        .. Responsibilities ..
+        * Dialog flow management
+        * UI presentation
+        * Dialog progression
+        * Dialog events
+    }
+}
+
+' Define relationship styles
+' Dependency
+skinparam ArrowColor Black
+' Aggregation
+skinparam AggregationnArrowColor DarkGreen
+' Composition
+skinparam CompositionArrowColor DarkRed
+
+' Character relationships
+PlayerController o--> "uses" PlayerLocomotionInput
+PlayerController o--> "updates" PlayerState
+PlayerController o--> "controls" PlayerAnimation
+PlayerController ..> "utilizes" CharacterControllerUtils : "static calls"
+PlayerAnimation o--> "reads" PlayerState : "animates based on"
+PlayerState <.. PlayerAnimation : "notifies"
+
+' Management relationships
+PlayerSpawnHandler ..> "uses" PlayerPositionManager : "static calls"
+PlayerSpawnHandler --> "positions" PlayerController : "spawns"
+PlayerPositionDebugger ..> "monitors" PlayerPositionManager : "reads data"
+
+' Interaction system relationships
+BuildingInteraction o--> "creates/manages" InteractionMarker : "spawns marker"
+InteractionMarker ..> "stores" PlayerPositionManager : "saves position"
+InteractionMarker ..> "loads" SceneController : "transitions scene"
+BuildingInteraction ..> "loads" SceneController : "transitions scene"
+
+' Dialog system relationships
+ConversationStarter --> "disables" PlayerController : "during dialog"
+ConversationStarter --> "manages state" CursorManager : "unlock cursor"
+ConversationStarter ..> "triggers" DialogueEditor : "starts conversation"
+ConversationStarter <.. "notifies" DialogueEditor : "dialog ended event"
+
+' Scene management relationships
+SceneController ..> "uses" PlayerPositionManager : "loads position data"
+SceneController ...> "manages" CursorManager : "cursor visibility"
+PlayerSpawnHandler <.. "notifies" SceneController : "on scene loaded"
+
+' Legend
+legend right
+  Relationship Types
+  ===
+  ---> Composition: Strong ownership, lifecycle tied to parent
+  o--> Aggregation: Object may exist independently
+  ...> Dependency: Uses but doesn't own
+  <..> Callback: Notification relationship
+endlegend
+
+@enduml
