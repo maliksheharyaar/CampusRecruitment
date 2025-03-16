@@ -3,38 +3,57 @@ using UnityEngine.SceneManagement;
 
 public class CursorManager : MonoBehaviour
 {
+    // Scene-specific settings
+    [Header("Scene Settings")]
+    [SerializeField] private string currentSceneName;
+    [SerializeField] private bool lockCursorInThisScene = true;
+    [SerializeField] private bool startWithCursorLocked = true;
+    
+    // Track whether a dialog/conversation is active
+    private bool isInDialog = false;
+    
+    // Expose instance for scene-specific access
+    public static CursorManager Instance { get; private set; }
+    
     private void Awake()
     {
-        // Subscribe to scene loading events
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        // Set as scene's cursor manager
+        Instance = this;
+        
+        // Get current scene name if not set
+        if (string.IsNullOrEmpty(currentSceneName))
+        {
+            currentSceneName = SceneManager.GetActiveScene().name;
+        }
+        
+        // Apply initial cursor state
+        if (startWithCursorLocked && lockCursorInThisScene)
+        {
+            LockCursor();
+        }
+        else
+        {
+            UnlockCursor();
+        }
     }
 
     private void OnDestroy()
     {
-        // Unsubscribe from scene loading events
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (scene.name == "MainScene")
+        if (Instance == this)
         {
-            // In 3D scene: Lock and hide cursor
-            LockCursor();
-        }
-        else if (scene.name == "CanvasTestScene")
-        {
-            // In UI scene: Show and unlock cursor
-            UnlockCursor();
+            Instance = null;
         }
     }
 
     private void Update()
     {
-        // If we're in the MainScene (check current scene name)
-        if (SceneManager.GetActiveScene().name == "MainScene")
+        // Don't process input during dialogs
+        if (isInDialog) return;
+        
+        // Only handle cursor in scenes where it should be locked
+        if (lockCursorInThisScene)
         {
-            // If Escape is pressed, temporarily show cursor
+            // If Escape is pressed, toggle cursor lock state
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 if (Cursor.lockState == CursorLockMode.Locked)
@@ -55,13 +74,27 @@ public class CursorManager : MonoBehaviour
         }
     }
 
-    private void LockCursor()
+    public void SetDialogMode(bool inDialog)
+    {
+        isInDialog = inDialog;
+        
+        if (inDialog)
+        {
+            UnlockCursor();
+        }
+        else if (lockCursorInThisScene)
+        {
+            LockCursor();
+        }
+    }
+
+    public void LockCursor()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
-    private void UnlockCursor()
+    public void UnlockCursor()
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
