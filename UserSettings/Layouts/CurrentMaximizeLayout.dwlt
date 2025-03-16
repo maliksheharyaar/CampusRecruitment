@@ -26,7 +26,7 @@ MonoBehaviour:
   m_MinSize: {x: 400, y: 100}
   m_MaxSize: {x: 32384, y: 16192}
   vertical: 0
-  controlID: 79319
+  controlID: 79533
   draggingID: 0
 --- !u!114 &2
 MonoBehaviour:
@@ -154,7 +154,7 @@ MonoBehaviour:
   m_MinSize: {x: 100, y: 100}
   m_MaxSize: {x: 8096, y: 16192}
   vertical: 1
-  controlID: 79320
+  controlID: 79534
   draggingID: 0
 --- !u!114 &4
 MonoBehaviour:
@@ -1077,7 +1077,7 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: a6890000
+      m_SelectedIDs: 
       m_LastClickedID: 0
       m_ExpandedIDs: a85ff9ffce65f9ff306df9ffea73f9ffeec4f9ff6a59faffc680faff9289faff98f4fbff00cffcff20cffcff28cffcffa2d2fcff342dfdff3e2dfdff8433fdff60acfdffd4adfdff60b5fdffd0b9fdff08c1fdffe639fffff439ffffde45ffffa8a6ffff1ca8ffffdeceffffaad1fffff0faffffae1402009c760200
       m_RenameOverlay:
@@ -1176,7 +1176,7 @@ MonoBehaviour:
     m_SkipHidden: 1
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scenes
+    - Assets/StudentRecruitment/FinalCharacterController/Scripts
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -1218,8 +1218,8 @@ MonoBehaviour:
       m_ResourceFile: 
   m_AssetTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: a6890000
-    m_LastClickedID: 35238
+    m_SelectedIDs: 
+    m_LastClickedID: 0
     m_ExpandedIDs: ffffffff000000006c7d0000a07f00002480000026800000288000002a8000002c8000002e80000030800000328000003480000036800000388000003a8000003c8000003e80000040800000428000004480000046800000488000004a8000004c8000004e80000050800000528000005480000056800000588000005a8000005c8000005e80000060800000628000006480000066800000688000006a8000006c8000006e80000070800000728000007480000076800000788000007a8000007c8000007e80000080800000828000008480000086800000888000008a8000008c8000008e80000090800000928000009480000096800000988000009c8000009e800000a2800000a4800000a6800000a8800000aa800000ac800000ae800000b4800000b6800000b8800000ba800000bc800000be800000c0800000a0820000a6820000ae820000a63b0100aa3b0100b23b0100ba3b0100
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -1245,8 +1245,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: a6890000
-    m_LastClickedInstanceID: 35238
+    m_SelectedInstanceIDs: 
+    m_LastClickedInstanceID: 0
     m_HadKeyboardFocusLastEvent: 0
     m_ExpandedInstanceIDs: c6230000
     m_RenameOverlay:
@@ -1320,7 +1320,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: InspectorWindow
+  m_Name: ConsoleWindow
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -1329,15 +1329,15 @@ MonoBehaviour:
     y: 0
     width: 542
     height: 947
-  m_MinSize: {x: 276, y: 71}
+  m_MinSize: {x: 101, y: 121}
   m_MaxSize: {x: 4001, y: 4021}
-  m_ActualView: {fileID: 15}
+  m_ActualView: {fileID: 16}
   m_Panes:
   - {fileID: 15}
   - {fileID: 16}
   - {fileID: 17}
-  m_Selected: 0
-  m_LastSelected: 1
+  m_Selected: 1
+  m_LastSelected: 0
 --- !u!114 &15
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -1379,7 +1379,7 @@ MonoBehaviour:
     m_CachedPref: 227
     m_ControlHash: -371814159
     m_PrefName: Preview_InspectorPreview
-  m_LastInspectedObjectInstanceID: -1
+  m_LastInspectedObjectInstanceID: 3038
   m_LastVerticalScrollValue: 0
   m_GlobalObjectId: 
   m_InspectorMode: 0

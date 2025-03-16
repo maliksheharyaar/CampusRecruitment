@@ -10,7 +10,6 @@ public class ConversationStarter : MonoBehaviour
     [Header("Conversation Settings")]
     [SerializeField] private NPCConversation _conversation;
     [SerializeField] private KeyCode interactionKey = KeyCode.E;
-    [SerializeField] private float interactionRadius = 3f;
     
     [Header("Visual Cue (Optional)")]
     [SerializeField] private GameObject interactionPrompt;
