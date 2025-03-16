@@ -433,11 +433,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentIDCounter: 10
-  json: '{"Options":[{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":9}],"EditorInfo":{"isRoot":false,"xPos":182,"yPos":198},"ID":3,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-    want a quest please","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":451,"yPos":199},"ID":4,"ParamActions":[],"TMPFontGUID":null,"Text":"Go
-    away","parentUIDs":[0],"SpeechUID":-1}],"Parameters":[],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":3},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":4}],"EditorInfo":{"isRoot":true,"xPos":194,"yPos":22},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"Hello
-    Welcome","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Recruitment:","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":174,"yPos":325},"ID":9,"ParamActions":[],"TMPFontGUID":null,"Text":"Find
-    one of the buildings with the quest icon to explore program option at campus","parentUIDs":[3],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Recruitment:","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0}]}'
+  json: '{"Options":[{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":9}],"EditorInfo":{"isRoot":false,"xPos":302.5,"yPos":198},"ID":3,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+    want a quest please","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":572.5,"yPos":199},"ID":4,"ParamActions":[],"TMPFontGUID":null,"Text":"Go
+    away","parentUIDs":[0],"SpeechUID":-1}],"Parameters":[],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":3},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":4}],"EditorInfo":{"isRoot":true,"xPos":315.5,"yPos":22},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"Hello,
+    welcome to the student help desk, what can I do for you?","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Recruitment:","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0.464},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":295.5,"yPos":325},"ID":9,"ParamActions":[],"TMPFontGUID":null,"Text":"Sure
+    thing, please find one of the buildings with the quest icon to explore program
+    option at the campus.","parentUIDs":[3],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Recruitment:","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0.524}]}'
   saveVersion: 110
   DefaultName: 
   DefaultSprite: {fileID: 21300000, guid: f71c0dc03d067a342aa16a51674f6507, type: 3}
@@ -451,19 +452,7 @@ MonoBehaviour:
   EndConversationFont: {fileID: 0}
   Event:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!4 &335295809
 Transform:
   m_ObjectHideFlags: 0
@@ -491,6 +480,10 @@ PrefabInstance:
     - target: {fileID: 129346, guid: c50789636e1fc5c4b8a37e2700e4a3c1, type: 3}
       propertyPath: m_Name
       value: SM_Env_Tree_03
+      objectReference: {fileID: 0}
+    - target: {fileID: 129346, guid: c50789636e1fc5c4b8a37e2700e4a3c1, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 427308, guid: c50789636e1fc5c4b8a37e2700e4a3c1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -724,7 +717,7 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
-  m_Camera: {fileID: 4540561038469351543}
+  m_Camera: {fileID: 4912591454455636286}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -1056,11 +1049,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Event:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 1
   NodeID: 9
   TMPFont: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  Icon: {fileID: 21300000, guid: f71c0dc03d067a342aa16a51674f6507, type: 3}
-  Audio: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 3ff46261df2808a49b691c3cd7c020db, type: 3}
+  Audio: {fileID: 8300000, guid: 830934ed6d3fd0c439fc2c95de9293eb, type: 3}
 --- !u!4 &1349658074
 Transform:
   m_ObjectHideFlags: 0
@@ -1143,8 +1148,8 @@ MonoBehaviour:
         m_CallState: 2
   NodeID: 0
   TMPFont: {fileID: 0}
-  Icon: {fileID: 21300000, guid: f71c0dc03d067a342aa16a51674f6507, type: 3}
-  Audio: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 3ff46261df2808a49b691c3cd7c020db, type: 3}
+  Audio: {fileID: 8300000, guid: 6c99f704891d3ac4185f78bdcd445292, type: 3}
 --- !u!1 &1801581225
 GameObject:
   m_ObjectHideFlags: 0
@@ -1213,6 +1218,84 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1919550035
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1764781519555773204, guid: 68499d292f583574dad71d5deb6b6745,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2.1859846
+      objectReference: {fileID: 0}
+    - target: {fileID: 1764781519555773204, guid: 68499d292f583574dad71d5deb6b6745,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.00999999
+      objectReference: {fileID: 0}
+    - target: {fileID: 1764781519555773204, guid: 68499d292f583574dad71d5deb6b6745,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2.9326615
+      objectReference: {fileID: 0}
+    - target: {fileID: 1764781519555773204, guid: 68499d292f583574dad71d5deb6b6745,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1764781519555773204, guid: 68499d292f583574dad71d5deb6b6745,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1764781519555773204, guid: 68499d292f583574dad71d5deb6b6745,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1764781519555773204, guid: 68499d292f583574dad71d5deb6b6745,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1764781519555773204, guid: 68499d292f583574dad71d5deb6b6745,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1764781519555773204, guid: 68499d292f583574dad71d5deb6b6745,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1764781519555773204, guid: 68499d292f583574dad71d5deb6b6745,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5791488418395652463, guid: 68499d292f583574dad71d5deb6b6745,
+        type: 3}
+      propertyPath: m_Name
+      value: NoticeBoard
+      objectReference: {fileID: 0}
+    - target: {fileID: 8173647724809189978, guid: 68499d292f583574dad71d5deb6b6745,
+        type: 3}
+      propertyPath: m_text
+      value: This is just a test object, you have reached the end
+      objectReference: {fileID: 0}
+    - target: {fileID: 8173647724809189978, guid: 68499d292f583574dad71d5deb6b6745,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 1.05
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 68499d292f583574dad71d5deb6b6745, type: 3}
 --- !u!1001 &2034140474
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1425,7 +1508,7 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
---- !u!20 &4540561038469351543 stripped
+--- !u!20 &4912591454455636286 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 2821706747659564467, guid: 0acfef363c53d7e41b86b9e64742ef4e,
     type: 3}
@@ -1448,6 +1531,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: BroModelNPC_With_Dialogue
+      objectReference: {fileID: 0}
+    - target: {fileID: 2805649582431696640, guid: 52f7923d6c5ffd949a23d2acb39e7486,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6749638755206807466, guid: 52f7923d6c5ffd949a23d2acb39e7486,
         type: 3}
@@ -1594,3 +1682,4 @@ SceneRoots:
   - {fileID: 1247516176}
   - {fileID: 2102468730}
   - {fileID: 524206658}
+  - {fileID: 1919550035}

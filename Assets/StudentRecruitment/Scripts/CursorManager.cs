@@ -65,12 +65,6 @@ public class CursorManager : MonoBehaviour
                     LockCursor();
                 }
             }
-
-            // If mouse is clicked and cursor is unlocked, lock it again
-            if (Input.GetMouseButtonDown(0) && Cursor.lockState != CursorLockMode.Locked)
-            {
-                LockCursor();
-            }
         }
     }
 
