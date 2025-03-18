@@ -783,7 +783,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!82 &731025983
 AudioSource:
   m_ObjectHideFlags: 0
@@ -907,11 +907,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ThirdPersonController
-      objectReference: {fileID: 0}
-    - target: {fileID: 3348090605497928959, guid: 0acfef363c53d7e41b86b9e64742ef4e,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9099640075852172759, guid: 0acfef363c53d7e41b86b9e64742ef4e,
         type: 3}

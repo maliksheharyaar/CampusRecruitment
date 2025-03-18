@@ -14,6 +14,10 @@ public class ConversationStarter : MonoBehaviour
     [Header("Visual Cue (Optional)")]
     [SerializeField] private GameObject interactionPrompt;
     
+    [Header("NPC Animation")]
+    [SerializeField] private Animator npcAnimator;
+    [SerializeField] private string talkingParameterName = "IsTalking";
+    
     private PlayerController _playerController;
     private GameObject _playerObject;
     private bool _isInConversation = false;
@@ -28,6 +32,12 @@ public class ConversationStarter : MonoBehaviour
         if (interactionPrompt != null)
         {
             interactionPrompt.SetActive(false);
+        }
+        
+        // If no animator is assigned, try to get it from this gameObject
+        if (npcAnimator == null)
+        {
+            npcAnimator = GetComponent<Animator>();
         }
     }
 
@@ -83,8 +93,27 @@ public class ConversationStarter : MonoBehaviour
     {
         _isInConversation = true;
         
+        // Check if _conversation is assigned
+        if (_conversation == null)
+        {
+            Debug.LogError("[ConversationStarter] No conversation assigned to this trigger! Please assign an NPCConversation in the inspector.", this);
+            _isInConversation = false;
+            return;
+        }
+        
+        // Check if ConversationManager is available
+        if (ConversationManager.Instance == null)
+        {
+            Debug.LogError("[ConversationStarter] ConversationManager.Instance is null. Make sure DialogueEditor is properly initialized.", this);
+            _isInConversation = false;
+            return;
+        }
+        
         // Start the conversation
         ConversationManager.Instance.StartConversation(_conversation);
+        
+        // Start NPC talking animation
+        SetNPCTalking(true);
         
         // Disable camera movement and player controller
         if (_playerController != null)
@@ -122,9 +151,24 @@ public class ConversationStarter : MonoBehaviour
         }
     }
     
+    /// <summary>
+    /// Set the NPC talking animation state
+    /// </summary>
+    /// <param name="isTalking">Whether the NPC should be in talking state</param>
+    public void SetNPCTalking(bool isTalking)
+    {
+        if (npcAnimator != null)
+        {
+            npcAnimator.SetBool(talkingParameterName, isTalking);
+        }
+    }
+    
     private void HandleConversationEnd()
     {
         if (!_isInConversation) return;
+        
+        // Stop NPC talking animation
+        SetNPCTalking(false);
         
         // Re-enable player control
         if (_playerController != null)
