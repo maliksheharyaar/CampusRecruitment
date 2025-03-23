@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/CharacterDialogueTestScene.unity
     guid: e8e9590b21e14be4093b67e9b51272d3
+  - enabled: 1
+    path: Assets/Scenes/EndlessRunner.unity
+    guid: 3e1f9e9285586334a80f326d6300cf82
   m_configObjects: {}

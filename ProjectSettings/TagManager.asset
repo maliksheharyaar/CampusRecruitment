@@ -5,6 +5,18 @@ TagManager:
   serializedVersion: 2
   tags:
   - Terrain
+  - Obstacle
+  - PowerUp
+  - Ground
+  - Coin
+  - Track
+  - PageCountText
+  - CoinCountText
+  - CraftBookButton
+  - PageListContainer
+  - PageListScrollRect
+  - BookViewPanel
+  - PageDetailPanel
   layers:
   - Default
   - TransparentFX
@@ -15,7 +27,7 @@ TagManager:
   - Player
   - Terrain
   - MuseTextureLayer
-  - 
+  - Ground
   - 
   - 
   - 

@@ -5,6 +5,8 @@ A 3D web-based interactive demo showcasing a university campus environment where
 **[Play the Demo](https://maliksheharyaar.github.io/my-unity-webgl-game/)**
 **IMPORTANT**: Make sure to click the within the game after launching to bound mouse to center of the screen to allow continuous character rotation. Press "ESC" to unbound the mouse
 
+**IMPORTANT**: Download all necessary assets or game wont work as expected
+
 ## 🎮 Features
 
 ### Player Controls
@@ -30,7 +32,8 @@ A 3D web-based interactive demo showcasing a university campus environment where
 - **Canvas Test Scene (UI Interface)**:
   - Clean UI interface with responsive buttons
   - Scene transition management
-  - Future mini-game launch capability
+  - Book collection system display
+  - Pages crafting functionality
   - Automatic cursor state handling
 
 ### Interaction Systems
@@ -41,21 +44,63 @@ A 3D web-based interactive demo showcasing a university campus environment where
   - Configurable interaction distance
   - Scene transition handling with position saving
 
+### Endless Runner Game
+- **Gameplay Features**:
+  - Procedurally generated track with obstacles, coins, and power-ups
+  - Lane-based movement system (left/right/center)
+  - Jumping mechanics for obstacle avoidance
+  - Collision detection with bounce-back effect
+  - Score system based on distance traveled
+  - Lives system with game over conditions
+  - Power-ups (invincibility, speed boost)
+  - Finish line to complete levels
+
+- **Controls**:
+  - Left/Right arrows or A/D: Change lanes
+  - Space/Up arrow/W: Jump
+  - P/Backspace/ESC: Pause game
+
+- **Technical Features**:
+  - Object culling system for performance optimization
+  - Procedural track generation
+  - Character animation system
+  - Dynamic difficulty scaling
+  - Cross-scene data persistence
+
+### Book Collection System
+- **Reward Mechanism**:
+  - Earn coins based on score and performance
+  - Collect special pages by reaching achievements
+  - Craft complete books with collected pages
+  - Persistent progress across game sessions
+
+- **UI Components**:
+  - BookViewPanel for reviewing collected pages
+  - PageDetailPanel for detailed information
+  - PageListScrollRect for navigating collected pages
+  - Progress tracking and display
+  - Reset functionality for player progress
+
 ### Technical Features
 - **Position Management**:
   - Static position management system
   - Vector3 position validation
   - Position bounds checking
   - Transition state tracking
+- **Scene Persistence**:
+  - ScenePersistenceManager for cross-scene data handling
+  - PlayerPrefs-based save system
+  - BookManager singleton for tracking collections
+  - CanvasSceneInitializer for UI element connections
+- **Debug Systems**:
   - Debug logging system
   - Position update counter
-  - Error handling for invalid positions
-
+  - Error handling for WebGL context
 
 ### 🔧 Optimization
 - WebGL-specific optimizations
 - Scene loading optimization
-- Memory management
+- Memory management with proper resource cleanup
 - Position validation system
 - Error handling for WebGL context
 
@@ -71,6 +116,18 @@ A 3D web-based interactive demo showcasing a university campus environment where
    - ProBuilder
    - TextMeshPro
    - Input System (New)
+3. **Required Unity Store Assets**: 
+   - FREE CASUAL PACK SFX
+   - Dialogue Editor
+   - 2D Casual UI HD
+   - Loading screen animation
+   - Lowpoly Environment - Nature Free - MEDIEVAL FANTASY SERIES
+   - Low Poly Modular Characters
+   - Free Pixel Font - Thaleah
+   - FREE Low Poly Human - RPG Character
+   - Footsteps - Essentials (only import Footsteps_Rock_Walk_01)
+   - Fantasy Skybox FREE
+   - Fantasy landscape
 
 ### Project Setup
 1. **Initial Setup**:
@@ -109,6 +166,23 @@ A 3D web-based interactive demo showcasing a university campus environment where
    3. Configure movement settings
    ```
 
+5. **Endless Runner Setup**:
+   ```
+   1. Configure EndlessRunnerManager with track segments
+   2. Set up obstacle and power-up prefabs
+   3. Configure player controller settings
+   4. Set up UI elements for score, lives, and game state
+   5. Connect EndlessRunnerRewards to BookManager
+   ```
+
+6. **Book Collection Setup**:
+   ```
+   1. Configure BookManager with page details
+   2. Set up UI panels in CanvasTestScene
+   3. Ensure ScenePersistenceManager is present
+   4. Set up CanvasSceneInitializer for UI connections
+   ```
+
 ### Build Settings
 1. **WebGL Settings**:
    ```
@@ -124,6 +198,7 @@ A 3D web-based interactive demo showcasing a university campus environment where
    1. Add scenes to build settings:
       - MainScene (index 0)
       - CanvasTestScene (index 1)
+      - EndlessRunner (index 2)
    2. Enable "Auto Build" for WebGL
    ```
 
@@ -137,7 +212,21 @@ A 3D web-based interactive demo showcasing a university campus environment where
 
 ## 📝 Development Notes
 
-### Script Dependencies
+### Integration Points
+1. **Main Scene to Endless Runner**:
+   - Building interaction triggers scene load
+   - Position data saved before transition
+   - EndlessRunnerRewards tracks performance
+
+2. **Endless Runner to Canvas Scene**:
+   - Rewards calculated on game completion
+   - Data stored via PlayerPrefs
+   - ScenePersistenceManager ensures data transfer
+
+3. **Canvas Scene Book System**:
+   - BookManager loads saved progress
+   - UI displays collected pages and coins
+   - Crafting system allows book completion
 
 ## 🚀 Deployment
 
@@ -155,13 +244,14 @@ A 3D web-based interactive demo showcasing a university campus environment where
 
 ## 📦 Future Updates
 - [ ] Additional building interactions
-- [ ] Mini-game implementation
+- [ ] More mini-games beyond Endless Runner
 - [ ] Enhanced UI feedback
 - [ ] More campus areas
 - [ ] Character customization options
+- [ ] Additional book collections and rewards
 
 
-### Important Considerations for now
+### Important Considerations
 1. **Position Management**:
    - Position is saved before scene transitions
    - Validation occurs during save/load
@@ -172,7 +262,7 @@ A 3D web-based interactive demo showcasing a university campus environment where
    - Position data persists through static manager
    - Scene loading handles edge cases
 
-3. **Debugging**:
-   - Console logs track position updates
-   - Visual feedback in Scene view
-   - Inspector debugging tools available
+3. **Memory Management**:
+   - Proper resource cleanup in OnDestroy methods
+   - Event unsubscription to prevent memory leaks
+   - Optimized object pooling for repeated elements
