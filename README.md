@@ -125,12 +125,25 @@ A 3D web-based interactive demo showcasing a university campus environment where
    - Low Poly Modular Characters
    - Free Pixel Font - Thaleah
    - FREE Low Poly Human - RPG Character
-   - Footsteps - Essentials (only import Footsteps_Rock_Walk_01)
    - Fantasy Skybox FREE
    - Fantasy landscape
 
-### Project Setup
+### Project Setup based on just cloning the project
 1. **Initial Setup**:
+   ```
+   1. Clone repository or branch (git clone --branch BRANCH_NAME --single-branch https://github.com/maliksheharyaar/CampusRecruitment.git)
+   2. Open project in Unity, when the "Unity Package Manager Error" shows just click "Continue"
+   3. When the pop-up for "Enter Safe Mode?" appears, just "Enter Safe Mode"
+   4. When the project opens up, there will be errors regarding missing assets. Now assuming you have subscribed to the above Unity store Assets.To fix those error goto the tab Windows > Package Manager > in My Assets download all the ones mentioned above
+   5. Then after downloading all of them, just import the asset "Dialogue Editor" and this will cause the script in Assets/Editor/AutoImportUnityStoreAssets.cs to run which will import the rest of the assets together. This script only runs the first time and then creates a FirstLaunchComplete.txt file which just prevents the script from running again (NOTE: Don't include this .txt file in your git commits)
+   6. Open MainScene from Assets/Scenes/ and explore
+   7. Some of the assets might be showing their material as "pink" colored, to fix that goto the tab Window > Rendering > Render Pipeline Converter -> check the "Material Upgrade" checkbox and then in the bottom right click "Initalize and Convert". That should take care of those missing material issues.
+   8. If something is still pink then thats your problem now, tweak around the material a bit, or google it...
+
+   ```
+
+### Project Setup - Reference
+1. **Initial Setup**: Most of this is only for reference sake as the scenes are already setup
    ```
    1. Clone repository
    2. Open project in Unity
