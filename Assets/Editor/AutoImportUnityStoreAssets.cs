@@ -6,7 +6,7 @@ using System.Collections.Generic;
 [InitializeOnLoad]
 public class AutoImportUnityStoreAssets
 {
-    private static readonly string assetStorePath = "Assets/"; // Change this if needed
+    private static readonly string assetStorePath = "Assets/UnityStoreAssets/"; // Change this if needed
     private static readonly string importedFlagPath = "Assets/Editor/FirstLaunchComplete.txt";
     
     private static readonly List<string> requiredAssets = new List<string>
@@ -19,7 +19,6 @@ public class AutoImportUnityStoreAssets
         "Low Poly Modular Characters",
         "Free Pixel Font - Thaleah",
         "FREE Low Poly Human - RPG Character",
-        "Footsteps - Essentials",
         "Fantasy Skybox FREE",
         "Fantasy landscape"
     };
