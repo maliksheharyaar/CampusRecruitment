@@ -5,7 +5,7 @@ A 3D web-based interactive demo showcasing a university campus environment where
 **[Play the Demo](https://maliksheharyaar.github.io/my-unity-webgl-game/)**
 **IMPORTANT**: Make sure to click the within the game after launching to bound mouse to center of the screen to allow continuous character rotation. Press "ESC" to unbound the mouse
 
-**IMPORTANT**: Download all necessary assets or game wont work as expected
+**IMPORTANT**: Download all necessary assets or game wont work as expected. Due to Licencing reasons (some assets use Entension type Licence), each individual developer directly working on this projects is required to purchase(Free) the assets from the unity asset store. There to comply to licencing, all such asset files have been removed from the project and the download and importing of the required assets is necessary for the assets to automatically reconnect to the missing assets.
 
 ## 🎮 Features
 
