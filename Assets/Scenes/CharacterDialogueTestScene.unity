@@ -432,15 +432,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentIDCounter: 13
-  json: '{"Options":[{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":9}],"EditorInfo":{"isRoot":false,"xPos":148.5,"yPos":198},"ID":3,"ParamActions":[],"TMPFontGUID":null,"Text":"I
-    want a quest please","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":417.5,"yPos":199},"ID":4,"ParamActions":[],"TMPFontGUID":null,"Text":"Go
-    away","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":358,"yPos":312},"ID":12,"ParamActions":[],"TMPFontGUID":null,"Text":"Sure","parentUIDs":[9],"SpeechUID":-1}],"Parameters":[],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":3},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":4}],"EditorInfo":{"isRoot":true,"xPos":160.5,"yPos":22},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"Hello,
-    welcome to the student help desk, what can I do for you?","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Recruitment:","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0.464},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":12}],"EditorInfo":{"isRoot":false,"xPos":91.5,"yPos":282},"ID":9,"ParamActions":[],"TMPFontGUID":null,"Text":"Sure
+  json: '{"Options":[{"Connections":[{"__type":"EditableSpeechConnection:#DialogueEditor","Conditions":[],"NodeUID":9}],"EditorInfo":{"isRoot":false,"xPos":135,"yPos":198},"ID":3,"ParamActions":[],"TMPFontGUID":null,"Text":"I
+    want a quest please","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":404,"yPos":199},"ID":4,"ParamActions":[],"TMPFontGUID":null,"Text":"Go
+    away","parentUIDs":[0],"SpeechUID":-1},{"Connections":[],"EditorInfo":{"isRoot":false,"xPos":344.5,"yPos":312},"ID":12,"ParamActions":[],"TMPFontGUID":null,"Text":"Sure","parentUIDs":[9],"SpeechUID":-1}],"Parameters":[],"SpeechNodes":[{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":3},{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":4}],"EditorInfo":{"isRoot":true,"xPos":147,"yPos":22},"ID":0,"ParamActions":[],"TMPFontGUID":null,"Text":"Hello,
+    welcome to the student help desk, what can I do for you?","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Recruitment:","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0.464},{"Connections":[{"__type":"EditableOptionConnection:#DialogueEditor","Conditions":[],"NodeUID":12}],"EditorInfo":{"isRoot":false,"xPos":78,"yPos":282},"ID":9,"ParamActions":[],"TMPFontGUID":null,"Text":"Sure
     thing, please find one of the buildings with the quest icon to explore program
     option at the campus.","parentUIDs":[3],"AdvanceDialogueAutomatically":false,"AudioGUID":null,"AutoAdvanceShouldDisplayOption":false,"IconGUID":null,"Name":"Recruitment:","OptionUIDs":null,"SpeechUID":0,"TimeUntilAdvance":0,"Volume":0.524}]}'
   saveVersion: 110
   DefaultName: 
-  DefaultSprite: {fileID: 21300000, guid: 3d3762456060d444c828e0f606292fad, type: 3}
+  DefaultSprite: {fileID: 21300000, guid: 2b8d98b6e73d52e46831a09c738f5a8a, type: 3}
   DefaultFont: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   NodeSerializedDataList:
   - {fileID: 1349658077}
@@ -452,19 +452,7 @@ MonoBehaviour:
   EndConversationFont: {fileID: 0}
   Event:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 928128168}
-        m_TargetAssemblyTypeName: SimpleSceneLoader, Assembly-CSharp
-        m_MethodName: LoadScene
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!4 &335295809
 Transform:
   m_ObjectHideFlags: 0
@@ -883,8 +871,28 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 3ff46261df2808a49b691c3cd7c020db,
+      objectReference: {fileID: 21300000, guid: 2b8d98b6e73d52e46831a09c738f5a8a,
         type: 3}
+    - target: {fileID: 6116449485086562217, guid: d9fa78e8c3c4f2b4b8f7f77ca8426cca,
+        type: 3}
+      propertyPath: m_textAlignment
+      value: 65535
+      objectReference: {fileID: 0}
+    - target: {fileID: 6116449485086562217, guid: d9fa78e8c3c4f2b4b8f7f77ca8426cca,
+        type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 6116449485086562217, guid: d9fa78e8c3c4f2b4b8f7f77ca8426cca,
+        type: 3}
+      propertyPath: m_VerticalAlignment
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 6116449485086562217, guid: d9fa78e8c3c4f2b4b8f7f77ca8426cca,
+        type: 3}
+      propertyPath: m_HorizontalAlignment
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1046,8 +1054,8 @@ MonoBehaviour:
       m_Calls: []
   NodeID: 9
   TMPFont: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  Icon: {fileID: 21300000, guid: 3d3762456060d444c828e0f606292fad, type: 3}
-  Audio: {fileID: 8300000, guid: 77967c7fcf884b744b8e1bd46bfed1cc, type: 3}
+  Icon: {fileID: 21300000, guid: 2b8d98b6e73d52e46831a09c738f5a8a, type: 3}
+  Audio: {fileID: 8300000, guid: 8ec55c144bb28e2408c4129114743bf9, type: 3}
 --- !u!4 &1349658074
 Transform:
   m_ObjectHideFlags: 0
@@ -1130,8 +1138,8 @@ MonoBehaviour:
         m_CallState: 2
   NodeID: 0
   TMPFont: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  Icon: {fileID: 21300000, guid: 3d3762456060d444c828e0f606292fad, type: 3}
-  Audio: {fileID: 8300000, guid: baa16bf6c7f11894d9e2f6efbbb1fcfa, type: 3}
+  Icon: {fileID: 21300000, guid: 2b8d98b6e73d52e46831a09c738f5a8a, type: 3}
+  Audio: {fileID: 8300000, guid: ac9443347c4e04b49b617c9a9826c3ff, type: 3}
 --- !u!114 &1349658078
 MonoBehaviour:
   m_ObjectHideFlags: 0

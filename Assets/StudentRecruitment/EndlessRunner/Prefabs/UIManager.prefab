@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2068999594325839841
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 919156439236698296}
+  - component: {fileID: 8478190048203496126}
+  m_Layer: 0
+  m_Name: UIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &919156439236698296
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2068999594325839841}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 994.44604, y: 699.1634, z: 6.2446737}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8478190048203496126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2068999594325839841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: affca702e34172144847f26c7287ab63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainGameUI: {fileID: 0}
+  gameOverUI: {fileID: 0}
+  winUI: {fileID: 0}
+  pauseMenuUI: {fileID: 0}
+  scoreText: {fileID: 0}
+  hitIndicators:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  invincibilityIndicator: {fileID: 0}
+  invincibilityDurationSlider: {fileID: 0}
+  finalScoreText: {fileID: 0}
+  retryButton: {fileID: 0}
+  gameOverReturnButton: {fileID: 0}
+  coinsAwardedText: {fileID: 0}
+  pageAwardedText: {fileID: 0}
+  continueButton: {fileID: 0}
+  scoreCountSpeed: 0.05
+  hudPanel: {fileID: 0}
+  lifeIcons: []
+  invincibilityIcon: {fileID: 0}
+  speedBoostIcon: {fileID: 0}
+  extraLifeIcon: {fileID: 0}
+  invincibilitySlider: {fileID: 0}
+  speedBoostSlider: {fileID: 0}
+  victoryPanel: {fileID: 0}
+  newPageNotification: {fileID: 1216688828669844, guid: 47356d574ebc3a545bfaef26eb02a2ea,
+    type: 3}
+  returnSceneName: CanvasTestScene

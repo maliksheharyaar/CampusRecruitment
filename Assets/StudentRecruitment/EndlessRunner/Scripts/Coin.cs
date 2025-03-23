@@ -10,7 +10,7 @@ namespace StudentRecruitment.EndlessRunner
         [SerializeField] private float rotationSpeed = 90f;
         [SerializeField] private GameObject collectEffect;
         [SerializeField] private AudioClip collectSound;
-        [SerializeField] private float despawnDelay = 2f; // Delay before despawning after collection
+        [SerializeField] private float despawnDelay = 0f; // Delay before despawning after collection
         
         private bool isCollected = false;
         private Collider coinCollider;

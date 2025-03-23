@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8214869992382961304
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3401431334087810426}
+  - component: {fileID: 2770187149211682952}
+  - component: {fileID: 8348093654325044734}
+  m_Layer: 0
+  m_Name: EndlessRunnerManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3401431334087810426
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8214869992382961304}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 31.805124, y: 39.49469, z: 134.99391}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2770187149211682952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8214869992382961304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a305ca78ae0db2d4986776f5eb8d8958, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  trackSegmentPrefabs:
+  - {fileID: 0}
+  obstaclePrefabs:
+  - {fileID: 0}
+  - {fileID: 0}
+  finishLinePrefab: {fileID: 0}
+  coinPrefab: {fileID: 0}
+  powerUpPrefabs:
+  - {fileID: 0}
+  - {fileID: 0}
+  trackSegmentsToSpawn: 20
+  segmentLength: 10
+  trackParent: {fileID: 0}
+  laneDistance: 6
+  initialSpeed: 11.71
+  maxSpeed: 20
+  acceleration: 0.1
+  speedBoostMultiplier: 1.5
+  speedBoostDuration: 5
+  obstacleSpawnChance: 0.74
+  coinSpawnChance: 0.41
+  powerUpSpawnChance: 0.12
+  maxCoinsPerSegment: 1
+  maxPowerUpsPerSegment: 1
+  playerController: {fileID: 0}
+  boulder: {fileID: 0}
+  powerUpDuration: 3
+  coinsPerCompletion: 0
+  baseCoinsPerScore: 1
+  scoreMultiplier: 1
+  mainSceneName: MainScene
+  visibilityDistance: 100
+  cullingDistance: 20
+--- !u!114 &8348093654325044734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8214869992382961304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c2d8b2abc330c741b984b88f03813d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvasSceneName: CanvasTestScene
