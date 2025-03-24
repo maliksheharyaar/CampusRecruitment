@@ -221,7 +221,7 @@ namespace StudentRecruitment.EndlessRunner
             // Spawn finish line at the end
             if (finishLinePrefab != null)
             {
-                GameObject finishLine = Instantiate(finishLinePrefab, new Vector3(0, 0, currentZPosition - 15), Quaternion.identity, trackParent);
+                GameObject finishLine = Instantiate(finishLinePrefab, new Vector3(0, 0, currentZPosition - 5), Quaternion.identity, trackParent);
                 spawnedSegments.Add(finishLine);
                 
                 // Make sure the finish line has a trigger collider and the "Finish" tag

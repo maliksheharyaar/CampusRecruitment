@@ -142,13 +142,6 @@ namespace StudentRecruitment.EndlessRunner
         {
             // Unregister from events
             UnregisterEvents();
-            
-            // Stop all coroutines when disabled
-            StopAllCoroutines();
-            
-            // Explicitly null out coroutine references
-            invincibilityCoroutine = null;
-            speedBoostCoroutine = null;
         }
         
         private void UnregisterEvents()
@@ -162,16 +155,6 @@ namespace StudentRecruitment.EndlessRunner
             RunnerController.OnInvincibilityChanged -= UpdateInvincibilityDisplay;
             RunnerController.OnLivesChanged -= UpdateLives;
             RunnerController.OnPowerUpCollected -= HandlePowerUp;
-            
-            // Remove button listeners if they exist
-            if (retryButton != null)
-                retryButton.onClick.RemoveAllListeners();
-                
-            if (gameOverReturnButton != null)
-                gameOverReturnButton.onClick.RemoveAllListeners();
-                
-            if (continueButton != null)
-                continueButton.onClick.RemoveAllListeners();
         }
         
         private void OnDestroy()
@@ -184,13 +167,6 @@ namespace StudentRecruitment.EndlessRunner
             
             // Make sure we're unregistered from events
             UnregisterEvents();
-            
-            // Clear references
-            runnerManager = null;
-            playerController = null;
-            
-            // Force garbage collection to clean up any lingering allocations
-            System.GC.Collect();
         }
         
         // Display score

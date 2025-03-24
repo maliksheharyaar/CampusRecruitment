@@ -17,6 +17,7 @@ TagManager:
   - PageListScrollRect
   - BookViewPanel
   - PageDetailPanel
+  - FxTemporaire
   layers:
   - Default
   - TransparentFX
@@ -28,7 +29,7 @@ TagManager:
   - Terrain
   - MuseTextureLayer
   - Ground
-  - 
+  - Track
   - 
   - 
   - 
