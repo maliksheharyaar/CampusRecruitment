@@ -122,5 +122,5 @@ MonoBehaviour:
   rotationSpeed: 45
   bobSpeed: 1
   bobHeight: 0.5
-  collectEffect: {fileID: 0}
-  despawnDelay: 2
+  collectSound: {fileID: 0}
+  soundVolume: 1

@@ -125,6 +125,8 @@ A 3D web-based interactive demo showcasing a university campus environment where
    - Low Poly Modular Characters
    - Free Pixel Font - Thaleah
    - FREE Low Poly Human - RPG Character
+   - Polygonal's Low-Poly Particle Pack
+   - Ten Power-Ups
    - Fantasy Skybox FREE
    - Fantasy landscape
 

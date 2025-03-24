@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -5.82, z: 48.7}
-  m_LocalScale: {x: 2, y: 2.4751, z: 1}
+  m_LocalScale: {x: 5.3292, y: 7.2698035, z: 4.3115}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -66,5 +66,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 095065686bb0ace4abab7b2218df35a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  finishParticles: {fileID: 0}
-  finishSound: {fileID: 0}
+  finishParticles: {fileID: 198694502634222740, guid: b3d8264aa7d2d824a8a503e45291ddf4,
+    type: 3}
+  finishSound: {fileID: 8300000, guid: 3a6cd568bbc5b4146b5763b9bf28ba85, type: 3}
+  soundVolume: 0.219

@@ -11,12 +11,14 @@ namespace StudentRecruitment.EndlessRunner
         [SerializeField] private float rotationSpeed = 50f;
         [SerializeField] private float bobSpeed = 1f;
         [SerializeField] private float bobHeight = 0.5f;
-        [SerializeField] private ParticleSystem collectEffect;
-        [SerializeField] private float despawnDelay = 2f; // Consistent despawn delay
+        [SerializeField] private AudioClip collectSound;
+        [SerializeField, Range(0f, 1f), Tooltip("Volume of the collect sound effect")] 
+        private float soundVolume = 1.0f;
 
         private Vector3 startPosition;
         private bool collected = false;
         private Collider powerUpCollider;
+        private AudioSource audioSource;
 
         public PowerUpType Type => powerUpType;
 
@@ -24,6 +26,17 @@ namespace StudentRecruitment.EndlessRunner
         {
             startPosition = transform.position;
             powerUpCollider = GetComponent<Collider>();
+            
+            // Get or add AudioSource component
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null && collectSound != null)
+            {
+                audioSource = gameObject.AddComponent<AudioSource>();
+                audioSource.playOnAwake = false;
+                audioSource.spatialBlend = 1.0f; // 3D sound
+                audioSource.minDistance = 1.0f;
+                audioSource.maxDistance = 20.0f;
+            }
         }
 
         private void Update()
@@ -43,38 +56,42 @@ namespace StudentRecruitment.EndlessRunner
             if (collected) return;
             collected = true;
 
-            // Disable collider immediately to prevent multiple collections
-            if (powerUpCollider != null)
+            // Play sound effect if available but detach it so it continues playing
+            if (collectSound != null)
             {
-                powerUpCollider.enabled = false;
+                PlayDetachedSound(collectSound, transform.position, soundVolume);
             }
 
-            // Hide the model immediately
-            foreach (Transform child in transform)
-            {
-                if (child.GetComponent<ParticleSystem>() == null)
-                {
-                    child.gameObject.SetActive(false);
-                }
-            }
-
-            // Play particle effect if available
-            if (collectEffect != null)
-            {
-                collectEffect.Play();
-            }
-
-            // Use consistent despawn delay
-            StartCoroutine(DelayedDespawn());
+            // Destroy the object immediately
+            Destroy(gameObject);
         }
         
-        private IEnumerator DelayedDespawn()
+        // Play a sound effect at a position, detached from the original object
+        private void PlayDetachedSound(AudioClip clip, Vector3 position, float volume)
         {
-            // Wait for the specified delay
-            yield return new WaitForSeconds(despawnDelay);
+            // Create a temporary game object to play the sound
+            GameObject tempAudio = new GameObject("TempAudio");
+            tempAudio.transform.position = position;
             
-            // Deactivate the game object
-            gameObject.SetActive(false);
+            // Add an audio source component and configure it
+            AudioSource source = tempAudio.AddComponent<AudioSource>();
+            source.clip = clip;
+            source.volume = volume;
+            source.spatialBlend = 1.0f; // 3D sound
+            source.Play();
+            
+            // Destroy the temporary object after the sound is done playing
+            Destroy(tempAudio, clip.length + 0.1f);
+        }
+        
+        // Public method to adjust volume at runtime
+        public void SetSoundVolume(float volume)
+        {
+            soundVolume = Mathf.Clamp01(volume);
+            if (audioSource != null)
+            {
+                audioSource.volume = soundVolume;
+            }
         }
     }
 } 

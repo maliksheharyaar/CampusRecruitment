@@ -376,7 +376,7 @@ public class BookManager : MonoBehaviour
     {
         // Update coin count text
         if (coinCountText)
-            coinCountText.text = currentCoins.ToString();
+            coinCountText.text = $"{currentCoins}/{requiredCoinsForBook}";
 
         // Count collected pages
         int collectedPageCount = 0;

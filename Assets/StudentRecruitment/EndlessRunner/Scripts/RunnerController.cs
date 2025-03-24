@@ -38,11 +38,20 @@ namespace StudentRecruitment.EndlessRunner
         [SerializeField] private float groundDistance = 0.4f;
         [SerializeField] private LayerMask groundMask;
 
+        [Header("Audio")]
+        [SerializeField] private AudioClip runningSound;
+        [SerializeField, Range(0f, 1f), Tooltip("Volume of the running sound effect")] 
+        private float runningSoundVolume = 0.5f;
+        [SerializeField, Range(0.5f, 2f), Tooltip("Pitch/rate of the running sound effect")] 
+        private float runningSoundPitch = 1.0f;
+        [SerializeField] private bool enableRunningSound = true;
+
         // Components
         private CharacterController controller;
         private Animator animator;
         private PlayerInputActions inputActions;
         private IDisposable inputBindings;
+        private AudioSource audioSource;
 
         // Movement state
         private int targetLane = 1; // 0: left, 1: center, 2: right
@@ -118,6 +127,17 @@ namespace StudentRecruitment.EndlessRunner
             
             // Set up input actions
             inputActions = new PlayerInputActions();
+            
+            // Get or add AudioSource component
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+            {
+                audioSource = gameObject.AddComponent<AudioSource>();
+                audioSource.playOnAwake = false;
+                audioSource.loop = true;
+                audioSource.spatialBlend = 0.0f; // 2D sound for running
+                audioSource.volume = runningSoundVolume;
+            }
         }
 
         private void Start()
@@ -132,6 +152,14 @@ namespace StudentRecruitment.EndlessRunner
                 {
                     animator.SetBool("IsRunning", true);
                 }
+            }
+            
+            // Configure audio
+            if (audioSource != null && runningSound != null)
+            {
+                audioSource.clip = runningSound;
+                audioSource.volume = runningSoundVolume;
+                audioSource.pitch = runningSoundPitch;
             }
         }
 
@@ -181,6 +209,9 @@ namespace StudentRecruitment.EndlessRunner
             
             // Add forward movement
             MoveForward();
+            
+            // Handle running sound
+            UpdateRunningSound();
             
             // Log position occasionally for debugging
             if (Time.frameCount % 120 == 0)
@@ -380,6 +411,12 @@ namespace StudentRecruitment.EndlessRunner
         {
             isJumping = true;
             
+            // Pause running sound when jumping
+            if (audioSource != null && audioSource.isPlaying)
+            {
+                audioSource.Pause();
+            }
+            
             // Start jump animation
             if (animator != null)
             {
@@ -431,6 +468,9 @@ namespace StudentRecruitment.EndlessRunner
             }
             
             isJumping = false;
+            
+            // Resume running sound if appropriate
+            UpdateRunningSound();
         }
 
         // Collision handling
@@ -822,6 +862,12 @@ namespace StudentRecruitment.EndlessRunner
                 shieldVFX.SetActive(false);
             }
             
+            // Clean up audio
+            if (audioSource != null)
+            {
+                audioSource.Stop();
+            }
+            
             // Force GC collection to clean up any lingering allocations
             GC.Collect();
         }
@@ -840,6 +886,61 @@ namespace StudentRecruitment.EndlessRunner
             // This receiver will catch the PlaySound animation event
             // You can add actual sound playing logic here if needed
             // For now this empty method will prevent the error
+        }
+
+        private void UpdateRunningSound()
+        {
+            if (audioSource == null || runningSound == null || !enableRunningSound) return;
+            
+            // Should be playing running sound when:
+            // 1. Player is grounded (not jumping)
+            // 2. Player is moving (speed > 0)
+            // 3. Player is not dead or finished
+            // 4. Player is not bouncing back from an obstacle
+            bool shouldPlayRunningSound = isGrounded && forwardSpeed > 0 && !isDead && !isFinished && !isBouncing;
+            
+            if (shouldPlayRunningSound && !audioSource.isPlaying)
+            {
+                audioSource.pitch = runningSoundPitch;
+                audioSource.Play();
+            }
+            else if (!shouldPlayRunningSound && audioSource.isPlaying)
+            {
+                audioSource.Pause();
+            }
+        }
+
+        public void SetRunningSoundVolume(float volume)
+        {
+            runningSoundVolume = Mathf.Clamp01(volume);
+            if (audioSource != null)
+            {
+                audioSource.volume = runningSoundVolume;
+            }
+        }
+
+        public void SetRunningSoundPitch(float pitch)
+        {
+            // Clamp pitch between 0.5 (half speed) and 2.0 (double speed)
+            runningSoundPitch = Mathf.Clamp(pitch, 0.5f, 2f);
+            if (audioSource != null)
+            {
+                audioSource.pitch = runningSoundPitch;
+            }
+        }
+
+        public void EnableRunningSound(bool enable)
+        {
+            enableRunningSound = enable;
+            
+            if (!enableRunningSound && audioSource != null && audioSource.isPlaying)
+            {
+                audioSource.Stop();
+            }
+            else if (enableRunningSound)
+            {
+                UpdateRunningSound();
+            }
         }
     }
 } 

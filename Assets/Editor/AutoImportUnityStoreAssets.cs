@@ -20,6 +20,8 @@ public class AutoImportUnityStoreAssets
         "Free Pixel Font - Thaleah",
         "FREE Low Poly Human - RPG Character",
         "Fantasy Skybox FREE",
+        "Polygonal's Low-Poly Particle Pack",
+        "Ten Power-Ups",
         "Fantasy landscape"
     };
 

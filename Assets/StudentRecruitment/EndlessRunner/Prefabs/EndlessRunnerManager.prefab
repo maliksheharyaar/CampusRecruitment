@@ -55,8 +55,8 @@ MonoBehaviour:
   powerUpPrefabs:
   - {fileID: 0}
   - {fileID: 0}
-  trackSegmentsToSpawn: 20
-  segmentLength: 10
+  trackSegmentsToSpawn: 10
+  segmentLength: 35
   trackParent: {fileID: 0}
   laneDistance: 6
   initialSpeed: 11.71
@@ -64,9 +64,9 @@ MonoBehaviour:
   acceleration: 0.1
   speedBoostMultiplier: 1.5
   speedBoostDuration: 5
-  obstacleSpawnChance: 0.74
+  obstacleSpawnChance: 0.89
   coinSpawnChance: 0.41
-  powerUpSpawnChance: 0.12
+  powerUpSpawnChance: 0.81
   maxCoinsPerSegment: 1
   maxPowerUpsPerSegment: 1
   playerController: {fileID: 0}

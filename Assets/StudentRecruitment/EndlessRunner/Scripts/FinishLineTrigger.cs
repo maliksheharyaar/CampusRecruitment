@@ -8,6 +8,8 @@ namespace StudentRecruitment.EndlessRunner
     {
         [SerializeField] private ParticleSystem finishParticles;
         [SerializeField] private AudioClip finishSound;
+        [SerializeField, Range(0f, 1f), Tooltip("Volume of the finish line sound effect")] 
+        private float soundVolume = 1.0f;
 
         private bool hasBeenTriggered = false;
         private AudioSource audioSource;
@@ -38,6 +40,7 @@ namespace StudentRecruitment.EndlessRunner
                 if (audioSource != null && finishSound != null)
                 {
                     audioSource.clip = finishSound;
+                    audioSource.volume = soundVolume;
                     audioSource.Play();
                 }
                 
@@ -46,6 +49,16 @@ namespace StudentRecruitment.EndlessRunner
                 {
                     EndlessRunnerManager.Instance.OnPlayerReachFinish();
                 }
+            }
+        }
+        
+        // Public method to adjust volume at runtime
+        public void SetSoundVolume(float volume)
+        {
+            soundVolume = Mathf.Clamp01(volume);
+            if (audioSource != null)
+            {
+                audioSource.volume = soundVolume;
             }
         }
     }
