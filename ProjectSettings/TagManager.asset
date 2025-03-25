@@ -18,6 +18,7 @@ TagManager:
   - BookViewPanel
   - PageDetailPanel
   - FxTemporaire
+  - CenterLane
   layers:
   - Default
   - TransparentFX

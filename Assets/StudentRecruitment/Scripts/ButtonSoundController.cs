@@ -1,39 +1,63 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Button))]
 public class ButtonSoundController : MonoBehaviour
 {
-    [Header("Audio Settings")]
     [SerializeField] private AudioClip clickSound;
-    [SerializeField] private float clickVolume = 0.7f;
-    
+    [SerializeField, Range(0f, 1f)] private float clickVolume = 0.5f;
     private AudioSource audioSource;
     private Button button;
 
-    private void Start()
+    private void Awake()
     {
-        SetupAudio();
-        SetupButton();
-    }
+        // Get or add Button component
+        button = GetComponent<Button>();
+        if (button == null)
+        {
+            button = gameObject.AddComponent<Button>();
+        }
 
-    private void SetupAudio()
-    {
         // Try to get existing AudioSource first
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
+
+        // Configure AudioSource
         audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 0f; // 2D sound
     }
 
-    private void SetupButton()
+    private void OnEnable()
     {
-        button = GetComponent<Button>();
         if (button != null)
         {
             button.onClick.AddListener(PlayClickSound);
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (button != null)
+        {
+            button.onClick.RemoveListener(PlayClickSound);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        // Clean up event listeners
+        if (button != null)
+        {
+            button.onClick.RemoveListener(PlayClickSound);
+        }
+
+        // Clean up audio source
+        if (audioSource != null)
+        {
+            audioSource.Stop();
+            Destroy(audioSource);
         }
     }
 
@@ -42,14 +66,6 @@ public class ButtonSoundController : MonoBehaviour
         if (clickSound != null && audioSource != null)
         {
             audioSource.PlayOneShot(clickSound, clickVolume);
-        }
-    }
-
-    private void OnDestroy()
-    {
-        if (button != null)
-        {
-            button.onClick.RemoveListener(PlayClickSound);
         }
     }
 } 

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7878084266167479850}
   - component: {fileID: 8388451231339036244}
   - component: {fileID: 4225740281974800869}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: FinishLine
   m_TagString: Finish
   m_Icon: {fileID: 0}
@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -5.82, z: 48.7}
-  m_LocalScale: {x: 5.3292, y: 7.2698035, z: 4.3115}
+  m_LocalScale: {x: 5, y: 7.2698035, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -52,7 +52,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 9, y: 4, z: 1}
+  m_Size: {x: 9, y: 4, z: 4}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &4225740281974800869
 MonoBehaviour:

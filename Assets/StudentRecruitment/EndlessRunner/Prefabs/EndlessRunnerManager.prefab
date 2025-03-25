@@ -55,16 +55,21 @@ MonoBehaviour:
   powerUpPrefabs:
   - {fileID: 0}
   - {fileID: 0}
-  trackSegmentsToSpawn: 10
-  segmentLength: 35
+  trackSegmentsToSpawn: 30
+  segmentLength: 30
   trackParent: {fileID: 0}
   laneDistance: 6
-  initialSpeed: 11.71
-  maxSpeed: 20
+  enableTurns: 1
+  turnChance: 0.5
+  minSegmentsBeforeTurn: 2
+  leftTurnPrefab: {fileID: 0}
+  rightTurnPrefab: {fileID: 0}
+  initialSpeed: 20
+  maxSpeed: 25
   acceleration: 0.1
   speedBoostMultiplier: 1.5
   speedBoostDuration: 5
-  obstacleSpawnChance: 0.89
+  obstacleSpawnChance: 1.13
   coinSpawnChance: 0.41
   powerUpSpawnChance: 0.81
   maxCoinsPerSegment: 1
@@ -77,7 +82,7 @@ MonoBehaviour:
   scoreMultiplier: 1
   mainSceneName: MainScene
   visibilityDistance: 100
-  cullingDistance: 20
+  cullingDistance: 150
 --- !u!114 &8348093654325044734
 MonoBehaviour:
   m_ObjectHideFlags: 0

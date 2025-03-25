@@ -23,10 +23,14 @@ namespace StudentRecruitment.EndlessRunner
         [SerializeField] private bool autoStart = true; // Auto-start forward movement
         [SerializeField] private bool useDirectControls = true; // Enable direct keyboard controls
 
+        [Header("Turn Settings")]
+        [SerializeField] private float turnDuration = 0.8f; // How long it takes to complete a turn
+        [SerializeField] private float rotationSpeed = 10f; // How fast the character rotates when turning
+
         [Header("Character Model")]
         [SerializeField] private GameObject characterModel; // Reference to the 3D character model
         [SerializeField] private Transform modelTransform; // Reference to model transform for rotation
-        [SerializeField] private float rotationSpeed = 10f; // How fast the character rotates when changing lanes
+        [SerializeField] private float leanRotationSpeed = 5f; // How fast the character leans when changing lanes
 
         [Header("Player State")]
         [SerializeField] private int maxLives = 3;
@@ -61,6 +65,20 @@ namespace StudentRecruitment.EndlessRunner
         private float originalCenterY;
         private bool isBouncing = false;
         private float bounceTime = 0f;
+
+        // Turn state
+        private bool isInTurn = false;
+        private bool isTurning = false;
+        private bool isLaneMovementDisabled = false; // Flag to disable lane movement
+        private float postTurnLockTime = 0f; // Timer for post-turn movement lock
+        private const float POST_TURN_LOCK_DURATION = 1.0f; // 1 second lock after turn
+        private int preTurnLane = 1; // Store lane before turn
+        private int postTurnMovesRemaining = 0;
+        private Quaternion fromRotation;
+        private Quaternion toRotation;
+        private float turnStartTime;
+        private Coroutine currentTurnCoroutine;
+        private Vector3 currentMoveDirection = Vector3.forward; // Current forward direction
 
         // Player state
         private bool isJumping = false;
@@ -189,34 +207,51 @@ namespace StudentRecruitment.EndlessRunner
 
         private void Update()
         {
-            // Skip all movement and input processing if player is dead or finished
+            // Always check if grounded, regardless of game state
+            isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+            Debug.Log($"Ground check: Position={groundCheck.position}, Distance={groundDistance}, IsGrounded={isGrounded}");
+
+            // Update animator states regardless of game state
+            if (animator != null)
+            {
+                animator.SetBool("IsGrounded", isGrounded);
+                animator.SetBool("IsRunning", forwardSpeed > 0 && !isBouncing);
+                animator.SetBool("IsJumping", isJumping);
+            }
+
+            // Update running sound regardless of game state
+            UpdateRunningSound();
+
+            // Only process movement and controls if not dead or finished
             if (isDead || isFinished) return;
 
-            // Check if grounded
-            isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-
-            // Process direct keyboard controls
+            // Handle direct controls if enabled
             if (useDirectControls)
             {
                 HandleDirectControls();
             }
 
-            // Update lane position
-            HandleLaneMovement();
-            
-            // Handle bounce back effect
-            HandleBounce();
-            
-            // Add forward movement
-            MoveForward();
-            
-            // Handle running sound
-            UpdateRunningSound();
-            
-            // Log position occasionally for debugging
-            if (Time.frameCount % 120 == 0)
+            // Handle bounce back if active
+            if (isBouncing)
             {
-                Debug.Log($"Player position: {transform.position}, Speed: {forwardSpeed}, Grounded: {isGrounded}, Lane: {targetLane}");
+                HandleBounce();
+                return;
+            }
+
+            // Move forward
+            MoveForward();
+
+            // Handle lane movement
+            HandleLaneMovement();
+
+            // Update post-turn movement lock
+            if (postTurnLockTime > 0)
+            {
+                postTurnLockTime -= Time.deltaTime;
+                if (postTurnLockTime <= 0)
+                {
+                    isLaneMovementDisabled = false;
+                }
             }
         }
         
@@ -282,8 +317,8 @@ namespace StudentRecruitment.EndlessRunner
             // Don't move if finished, bouncing, or canMove is false
             if (isFinished || isBouncing || !canMove) return;
             
-            // Create movement vector
-            Vector3 moveDirection = Vector3.forward * forwardSpeed * Time.deltaTime;
+            // Create movement vector in the current move direction
+            Vector3 moveDirection = currentMoveDirection * forwardSpeed * Time.deltaTime;
             
             // Add gravity if not grounded
             if (!isGrounded)
@@ -311,7 +346,10 @@ namespace StudentRecruitment.EndlessRunner
             // Don't change lanes if finished or bouncing
             if (isFinished || isBouncing) return;
             
-            // Calculate target x position
+            // Calculate the right vector perpendicular to current move direction
+            Vector3 rightVector = Vector3.Cross(Vector3.up, currentMoveDirection).normalized;
+            
+            // Calculate target x position based on current move direction
             float targetX = (targetLane - 1) * laneDistance;
             
             // Smoothly move toward target lane
@@ -320,9 +358,11 @@ namespace StudentRecruitment.EndlessRunner
             
             try
             {
-                // Apply the horizontal movement directly to the controller
-                Vector3 moveDirection = new Vector3(currentLanePosition - transform.position.x, 0, 0);
-                controller.Move(moveDirection);
+                // Calculate the lane movement vector relative to the current move direction
+                Vector3 lateralMoveVector = rightVector * (currentLanePosition - previousLanePosition);
+                
+                // Apply the movement
+                controller.Move(lateralMoveVector);
                 
                 // Rotate the character model when changing lanes
                 if (characterModel != null || modelTransform != null)
@@ -348,15 +388,22 @@ namespace StudentRecruitment.EndlessRunner
                             targetYRotation = 30f;
                         }
                         
+                        // Calculate the rotation relative to the current move direction
+                        Quaternion targetRotation = transform.rotation * Quaternion.Euler(0, targetYRotation, 0);
+                        
                         // Smoothly rotate towards the target rotation
-                        Quaternion targetRotation = Quaternion.Euler(0, targetYRotation, 0);
-                        modelToRotate.rotation = Quaternion.Lerp(modelToRotate.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+                        modelToRotate.rotation = Quaternion.Lerp(
+                            modelToRotate.rotation, 
+                            targetRotation, 
+                            Time.deltaTime * leanRotationSpeed);
                     }
                     else
                     {
                         // Return to forward rotation when not moving horizontally
-                        Quaternion forwardRotation = Quaternion.Euler(0, 0, 0);
-                        modelToRotate.rotation = Quaternion.Lerp(modelToRotate.rotation, forwardRotation, Time.deltaTime * rotationSpeed);
+                        modelToRotate.rotation = Quaternion.Lerp(
+                            modelToRotate.rotation, 
+                            transform.rotation, 
+                            Time.deltaTime * leanRotationSpeed);
                     }
                 }
             }
@@ -369,17 +416,47 @@ namespace StudentRecruitment.EndlessRunner
         // Input callback methods
         public void OnJumpInput()
         {
-            if (!isJumping && isGrounded && !isFinished)
+            Debug.Log($"Jump input received. IsJumping={isJumping}, IsGrounded={isGrounded}, IsFinished={isFinished}, IsDead={isDead}");
+            
+            if (!isJumping && isGrounded && !isFinished && !isDead)
             {
+                Debug.Log("Starting jump coroutine");
                 StartCoroutine(JumpCoroutine());
+            }
+            else
+            {
+                Debug.Log($"Jump conditions not met: isJumping={isJumping}, isGrounded={isGrounded}, isFinished={isFinished}, isDead={isDead}");
             }
         }
 
         public void OnMoveLeftInput()
         {
-            if (targetLane > 0 && !isFinished && !isBouncing)
+            if (targetLane > 0 && !isFinished && !isBouncing && !isTurning && !isLaneMovementDisabled)
             {
+                // Check post-turn movement constraints
+                if (isInTurn)
+                {
+                    if (postTurnMovesRemaining <= 0)
+                    {
+                        // No more moves allowed after turn
+                        Debug.Log("Cannot move left - no more post-turn moves remaining");
+                        return;
+                    }
+                    
+                    // Reduce available moves
+                    postTurnMovesRemaining--;
+                    Debug.Log($"Post-turn move used. Remaining: {postTurnMovesRemaining}");
+                    
+                    // If we've used all moves, exit turn state
+                    if (postTurnMovesRemaining <= 0)
+                    {
+                        isInTurn = false;
+                        Debug.Log("Exiting turn state - all post-turn moves used");
+                    }
+                }
+                
                 targetLane--;
+                
                 if (animator != null)
                 {
                     animator.SetBool("IsRunning", true);
@@ -389,9 +466,32 @@ namespace StudentRecruitment.EndlessRunner
 
         public void OnMoveRightInput()
         {
-            if (targetLane < 2 && !isFinished && !isBouncing)
+            if (targetLane < 2 && !isFinished && !isBouncing && !isTurning && !isLaneMovementDisabled)
             {
+                // Check post-turn movement constraints
+                if (isInTurn)
+                {
+                    if (postTurnMovesRemaining <= 0)
+                    {
+                        // No more moves allowed after turn
+                        Debug.Log("Cannot move right - no more post-turn moves remaining");
+                        return;
+                    }
+                    
+                    // Reduce available moves
+                    postTurnMovesRemaining--;
+                    Debug.Log($"Post-turn move used. Remaining: {postTurnMovesRemaining}");
+                    
+                    // If we've used all moves, exit turn state
+                    if (postTurnMovesRemaining <= 0)
+                    {
+                        isInTurn = false;
+                        Debug.Log("Exiting turn state - all post-turn moves used");
+                    }
+                }
+                
                 targetLane++;
+                
                 if (animator != null)
                 {
                     animator.SetBool("IsRunning", true);
@@ -409,6 +509,13 @@ namespace StudentRecruitment.EndlessRunner
 
         private IEnumerator JumpCoroutine()
         {
+            if (isJumping)
+            {
+                Debug.Log("Jump coroutine already running");
+                yield break;
+            }
+            
+            Debug.Log("Starting jump coroutine");
             isJumping = true;
             
             // Pause running sound when jumping
@@ -421,6 +528,7 @@ namespace StudentRecruitment.EndlessRunner
             if (animator != null)
             {
                 animator.SetBool("IsJumping", true);
+                animator.SetBool("IsRunning", false);
             }
             
             // Jump upward phase
@@ -428,6 +536,8 @@ namespace StudentRecruitment.EndlessRunner
             float jumpDuration = jumpTime / 2;
             float startHeight = transform.position.y;
             float endHeight = startHeight + jumpHeight;
+            
+            Debug.Log($"Jump phase 1: Start height={startHeight}, End height={endHeight}, Duration={jumpDuration}");
             
             while (Time.time < jumpStartTime + jumpDuration)
             {
@@ -444,6 +554,8 @@ namespace StudentRecruitment.EndlessRunner
             // Fall downward phase
             float fallStartTime = Time.time;
             float fallDuration = jumpTime / 2;
+            
+            Debug.Log($"Jump phase 2: Start height={endHeight}, End height={startHeight}, Duration={fallDuration}");
             
             while (Time.time < fallStartTime + fallDuration)
             {
@@ -465,9 +577,11 @@ namespace StudentRecruitment.EndlessRunner
             if (animator != null)
             {
                 animator.SetBool("IsJumping", false);
+                animator.SetBool("IsRunning", true);
             }
             
             isJumping = false;
+            Debug.Log("Jump completed");
             
             // Resume running sound if appropriate
             UpdateRunningSound();
@@ -513,6 +627,8 @@ namespace StudentRecruitment.EndlessRunner
         // Trigger handling
         private void OnTriggerEnter(Collider other)
         {
+            Debug.Log($"OnTriggerEnter: {other.gameObject.name}, Tag: {other.tag}, Has TurnTrigger: {other.GetComponent<TurnTrigger>() != null}");
+            
             // Handle coin collection
             if (other.CompareTag("Coin"))
             {
@@ -546,6 +662,24 @@ namespace StudentRecruitment.EndlessRunner
                 {
                     HandleObstacleHit();
                     // StartBounceBack is called inside HandleObstacleHit
+                }
+            }
+            // Handle turn trigger
+            else if (other.CompareTag("Track"))
+            {
+                // Try to get a TurnTrigger component
+                TurnTrigger turnTrigger = other.GetComponent<TurnTrigger>();
+                Debug.Log($"Track object detected: {other.gameObject.name}, Has TurnTrigger: {turnTrigger != null}, Is turning: {isTurning}");
+                
+                if (turnTrigger != null && !isTurning)
+                {
+                    // Store current lane before turning
+                    preTurnLane = targetLane;
+                    
+                    // Start the turn
+                    StartTurn(turnTrigger);
+                    
+                    Debug.Log($"Turn started with TurnTrigger: {turnTrigger.gameObject.name}, IsLeftTurn: {turnTrigger.IsLeftTurn()}");
                 }
             }
         }
@@ -708,7 +842,7 @@ namespace StudentRecruitment.EndlessRunner
             powerUpCoroutine = null;
         }
 
-        // Reset player
+        // Reset player with turn state reset
         public void ResetPlayer()
         {
             isFinished = false;
@@ -718,13 +852,28 @@ namespace StudentRecruitment.EndlessRunner
             canMove = true;
             targetLane = 1;
             currentLanePosition = 0f;
+            
+            // Reset turn state
+            isInTurn = false;
+            isTurning = false;
+            preTurnLane = 1;
+            postTurnMovesRemaining = 0;
+            currentMoveDirection = Vector3.forward;
+            
+            // Cancel any ongoing turn
+            if (currentTurnCoroutine != null)
+            {
+                StopCoroutine(currentTurnCoroutine);
+                currentTurnCoroutine = null;
+            }
 
             // Reset lives
             lives = maxLives;
             if (OnLivesChanged != null) OnLivesChanged.Invoke(lives);
 
-            // Reset position
+            // Reset position and rotation
             transform.position = originalPosition;
+            transform.rotation = Quaternion.identity;
 
             // Reset controller height
             controller.height = originalHeight;
@@ -895,9 +1044,8 @@ namespace StudentRecruitment.EndlessRunner
             // Should be playing running sound when:
             // 1. Player is grounded (not jumping)
             // 2. Player is moving (speed > 0)
-            // 3. Player is not dead or finished
-            // 4. Player is not bouncing back from an obstacle
-            bool shouldPlayRunningSound = isGrounded && forwardSpeed > 0 && !isDead && !isFinished && !isBouncing;
+            // 3. Player is not bouncing back from an obstacle
+            bool shouldPlayRunningSound = isGrounded && forwardSpeed > 0 && !isBouncing;
             
             if (shouldPlayRunningSound && !audioSource.isPlaying)
             {
@@ -941,6 +1089,187 @@ namespace StudentRecruitment.EndlessRunner
             {
                 UpdateRunningSound();
             }
+        }
+
+        // Immediately forces the player to the middle lane
+        public void ForceMiddleLane()
+        {
+            if (isDead || isFinished || isTurning) return;
+            
+            Debug.Log("Forcing player to middle lane");
+            
+            // Disable lane movement
+            isLaneMovementDisabled = true;
+            
+            // Set target lane to middle (1)
+            targetLane = 1;
+            
+            // Directly center the player on the middle lane
+            Vector3 rightVector = Vector3.Cross(Vector3.up, currentMoveDirection).normalized;
+            
+            // Get current position
+            Vector3 newPosition = transform.position;
+            
+            // Project current position onto the right vector to get the lateral offset
+            float currentLateralOffset = Vector3.Dot(newPosition, rightVector);
+            
+            // Remove the lateral offset to center in lane
+            newPosition -= rightVector * currentLateralOffset;
+            
+            // Apply the new position if controller is enabled
+            if (controller != null && controller.enabled)
+            {
+                // Reset the current lane position tracking variable
+                currentLanePosition = 0f;
+                
+                // Move to new position
+                transform.position = newPosition;
+                
+                Debug.Log($"Player position reset to middle lane: {newPosition}");
+            }
+        }
+
+        // Enable lane movement again
+        public void EnableLaneMovement()
+        {
+            isLaneMovementDisabled = false;
+            Debug.Log("Lane movement re-enabled");
+        }
+
+        // Method to start a turn
+        private void StartTurn(TurnTrigger turnTrigger)
+        {
+            // Don't start another turn if already turning
+            if (isTurning) return;
+            
+            Debug.Log($"Starting turn. Current lane: {targetLane}, Pre-turn lane: {preTurnLane}");
+            
+            // Start turn coroutine
+            if (currentTurnCoroutine != null)
+            {
+                StopCoroutine(currentTurnCoroutine);
+            }
+            
+            // Force the player to the center lane during the turn
+            preTurnLane = targetLane;
+            targetLane = 1; // Center lane (0=left, 1=center, 2=right)
+            
+            currentTurnCoroutine = StartCoroutine(TurnCoroutine(turnTrigger));
+        }
+
+        // Turn coroutine
+        private IEnumerator TurnCoroutine(TurnTrigger turnTrigger)
+        {
+            // Set turning state
+            isTurning = true;
+            
+            // Get only the turn direction - ignore the exit direction from the trigger
+            bool isLeftTurn = turnTrigger.IsLeftTurn();
+            
+            // SIMPLIFY: Just use direct angle instead of calculating exit direction
+            float turnAngle = isLeftTurn ? -90f : 90f;
+            
+            // Log turn information
+            Debug.LogWarning($"TURNING: Direction={(isLeftTurn ? "LEFT" : "RIGHT")}, Angle={turnAngle}, CurrentForward={transform.forward}");
+            
+            // Calculate position at the beginning of the turn segment
+            Vector3 turnStartPosition = turnTrigger.transform.position;
+            turnStartPosition.y = transform.position.y; // Maintain current height
+            
+            // Force player to center lane at beginning of turn
+            Vector3 centeredPosition = turnStartPosition;
+            centeredPosition.x = 0; // Center lane X position
+            
+            // Store current rotation
+            fromRotation = transform.rotation;
+            
+            // SIMPLIFY: Calculate target rotation directly based on turn angle
+            // Apply the turn angle to the current move direction
+            Vector3 newMoveDirection = Quaternion.Euler(0, turnAngle, 0) * currentMoveDirection;
+            toRotation = Quaternion.LookRotation(newMoveDirection, Vector3.up);
+            
+            Debug.LogWarning($"Current direction: {currentMoveDirection}, New direction after {turnAngle}° turn: {newMoveDirection}");
+            
+            // Start timing the turn
+            turnStartTime = Time.time;
+            float repositionDuration = turnDuration * 0.5f; // First half of turn for repositioning
+            
+            // First phase: reposition to center of turn segment
+            float startTime = Time.time;
+            Vector3 originalPosition = transform.position;
+            
+            // Keep lane movement disabled during the turn
+            isLaneMovementDisabled = true;
+            
+            // Reposition to center of turn segment
+            while (Time.time < startTime + repositionDuration)
+            {
+                float t = (Time.time - startTime) / repositionDuration;
+                
+                // Use smoothstep for easing
+                float smoothT = t * t * (3f - 2f * t);
+                
+                // Interpolate position
+                Vector3 newPosition = Vector3.Lerp(originalPosition, centeredPosition, smoothT);
+                transform.position = newPosition;
+                
+                // Start rotating during repositioning
+                transform.rotation = Quaternion.Slerp(fromRotation, toRotation, smoothT * 0.5f);
+                
+                yield return null;
+            }
+            
+            // Ensure player is exactly at the centered position
+            transform.position = centeredPosition;
+            
+            // Second phase: complete the rotation
+            startTime = Time.time;
+            while (Time.time < startTime + repositionDuration)
+            {
+                float t = (Time.time - startTime) / repositionDuration;
+                
+                // Use smoothstep for easing
+                float smoothT = t * t * (3f - 2f * t);
+                
+                // Interpolate rotation (from 50% to 100%)
+                transform.rotation = Quaternion.Slerp(
+                    Quaternion.Slerp(fromRotation, toRotation, 0.5f), 
+                    toRotation, 
+                    smoothT);
+                
+                yield return null;
+            }
+            
+            // Ensure final rotation is exact
+            transform.rotation = toRotation;
+            
+            // Update movement direction to match the new forward direction
+            currentMoveDirection = newMoveDirection;
+            
+            // Reset lane position state
+            currentLanePosition = 0f; // Reset lateral position to middle
+            targetLane = 1; // Force to middle lane (0=left, 1=center, 2=right)
+            
+            // Reset player position to exact center of track after turn
+            Vector3 exactCenter = transform.position;
+            // Zero out any lateral offset relative to the new forward direction
+            Vector3 rightVector = Vector3.Cross(Vector3.up, currentMoveDirection).normalized;
+            exactCenter -= Vector3.Project(transform.position, rightVector); // Remove any side offset
+            transform.position = exactCenter;
+            
+            // Exit turning state
+            isTurning = false;
+            
+            // No post-turn movement restrictions needed since we're centered
+            isInTurn = false;
+            postTurnMovesRemaining = 0;
+            
+            // Keep lane movement disabled for POST_TURN_LOCK_DURATION seconds after turning
+            isLaneMovementDisabled = true;
+            postTurnLockTime = POST_TURN_LOCK_DURATION;
+            Debug.Log($"Turn complete. Lane movement locked for {POST_TURN_LOCK_DURATION} seconds.");
+            
+            Debug.Log($"Turn complete. Player reset to center lane. New direction: {currentMoveDirection}");
         }
     }
 } 

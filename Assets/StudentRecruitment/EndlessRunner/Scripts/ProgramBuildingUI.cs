@@ -48,18 +48,65 @@ namespace StudentRecruitment.EndlessRunner
             "Page 5: Program Requirements - Details about courses, internships, and graduation requirements."
         };
         
-        private void Start()
+        private void Awake()
         {
-            // Set up button listeners
+            // Remove any existing listeners
+            RemoveButtonListeners();
+        }
+
+        private void OnEnable()
+        {
+            // Set up button listeners when the component is enabled
+            SetupButtonListeners();
+        }
+
+        private void OnDisable()
+        {
+            // Remove button listeners when the component is disabled
+            RemoveButtonListeners();
+        }
+
+        private void OnDestroy()
+        {
+            // Clean up button listeners when the object is destroyed
+            RemoveButtonListeners();
+        }
+
+        private void SetupButtonListeners()
+        {
             if (playMiniGameButton != null)
+            {
+                playMiniGameButton.onClick.RemoveAllListeners();
                 playMiniGameButton.onClick.AddListener(LaunchMiniGame);
+            }
                 
             if (craftBookButton != null)
+            {
+                craftBookButton.onClick.RemoveAllListeners();
                 craftBookButton.onClick.AddListener(TryCraftBook);
+            }
                 
             if (closeButton != null)
+            {
+                closeButton.onClick.RemoveAllListeners();
                 closeButton.onClick.AddListener(CloseUI);
+            }
+        }
+
+        private void RemoveButtonListeners()
+        {
+            if (playMiniGameButton != null)
+                playMiniGameButton.onClick.RemoveAllListeners();
                 
+            if (craftBookButton != null)
+                craftBookButton.onClick.RemoveAllListeners();
+                
+            if (closeButton != null)
+                closeButton.onClick.RemoveAllListeners();
+        }
+
+        private void Start()
+        {
             // Initialize UI to be hidden
             if (programPanel != null)
                 programPanel.SetActive(false);

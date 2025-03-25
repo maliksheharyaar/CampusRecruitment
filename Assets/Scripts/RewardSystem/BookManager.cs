@@ -80,7 +80,7 @@ public class BookManager : MonoBehaviour
         UpdateUI();
         PopulatePageList();
         SetupButtonListeners();
-
+        Debug.Log("UI initialized");
         // Ensure panels are initially disabled regardless of their state in the editor
         if (bookViewPanel) bookViewPanel.SetActive(false);
         if (pageDetailPanel) pageDetailPanel.SetActive(false);
@@ -91,26 +91,82 @@ public class BookManager : MonoBehaviour
 
     private void OnDestroy()
     {
+        // Remove scene change listener
         SceneManager.sceneLoaded -= OnSceneLoaded;
+        
+        // Clean up button listeners
+        RemoveButtonListeners();
     }
 
     // Set up all button listeners
     private void SetupButtonListeners()
     {
+        Debug.Log("Setting up button listeners");
         if (craftBookButton)
+        {
+            Debug.Log("Setting up craftBookButton listener");
             craftBookButton.onClick.AddListener(OnCraftBookClicked);
+        }
+        else
+        {
+            Debug.LogWarning("craftBookButton is not assigned");
+        }
         
         if (nextPageButton)
+        {
+            Debug.Log("Setting up nextPageButton listener");
             nextPageButton.onClick.AddListener(OnNextPageClicked);
+        }
+        else
+        {
+            Debug.LogWarning("nextPageButton is not assigned");
+        }
+        if (prevPageButton)
+        {
+            Debug.Log("Setting up prevPageButton listener");
+            prevPageButton.onClick.AddListener(OnPrevPageClicked);
+        }
+        else
+        {
+            Debug.LogWarning("prevPageButton is not assigned");
+        }
+        if (closeBookButton)
+        {
+            Debug.Log("Setting up closeBookButton listener");
+            closeBookButton.onClick.AddListener(CloseBookView);
+        }
+        else
+        {
+            Debug.LogWarning("closeBookButton is not assigned");
+        }
+        if (closePageDetailButton)
+        {
+            Debug.Log("Setting up closePageDetailButton listener");
+            closePageDetailButton.onClick.AddListener(ClosePageDetail);
+        }
+        else
+        {
+            Debug.LogWarning("closePageDetailButton is not assigned");
+        }
+    }
+
+    private void RemoveButtonListeners()
+    {
+        Debug.Log("Removing button listeners");
+        if (craftBookButton)
+            craftBookButton.onClick.RemoveAllListeners();
+        
+        if (nextPageButton)
+            nextPageButton.onClick.RemoveAllListeners();
         
         if (prevPageButton)
-            prevPageButton.onClick.AddListener(OnPrevPageClicked);
+            prevPageButton.onClick.RemoveAllListeners();
         
         if (closeBookButton)
-            closeBookButton.onClick.AddListener(CloseBookView);
+            closeBookButton.onClick.RemoveAllListeners();
         
         if (closePageDetailButton)
-            closePageDetailButton.onClick.AddListener(ClosePageDetail);
+            closePageDetailButton.onClick.RemoveAllListeners();
     }
 
     // Modify the OnSceneLoaded method to properly handle returning to CanvasTestScene
@@ -139,6 +195,10 @@ public class BookManager : MonoBehaviour
         }
         else if (scene.name == "CanvasTestScene")
         {
+            // Ensure cursor is unlocked and visible in CanvasTestScene
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            
             // When returning to the main scene, we need to reconnect all references
             StartCoroutine(ReconnectUIReferences());
         }
@@ -154,6 +214,9 @@ public class BookManager : MonoBehaviour
         
         // Find UI references again since they're lost when the scene reloads
         FindUIReferences();
+        
+        // Remove any existing listeners before adding new ones
+        RemoveButtonListeners();
         
         // Reload data from PlayerPrefs
         LoadPlayerData();
@@ -171,83 +234,123 @@ public class BookManager : MonoBehaviour
         if (bookViewPanel) bookViewPanel.SetActive(false);
         if (pageDetailPanel) pageDetailPanel.SetActive(false);
         
+        // Set up button listeners after everything is initialized
+        SetupButtonListeners();
+        
         Debug.Log("UI initialization complete, panels set to disabled state");
     }
     
     // Modify FindUIReferences to also find inactive GameObjects
     private void FindUIReferences()
     {
-        // Find UI references by tag or name if they've been lost
-        if (coinCountText == null)
-            coinCountText = GameObject.FindGameObjectWithTag("CoinCountText")?.GetComponent<TextMeshProUGUI>();
-            
-        if (pageCountText == null)
-            pageCountText = GameObject.FindGameObjectWithTag("PageCountText")?.GetComponent<TextMeshProUGUI>();
-            
-        if (craftBookButton == null)
-            craftBookButton = GameObject.FindGameObjectWithTag("CraftBookButton")?.GetComponent<Button>();
-            
-        if (craftButtonText == null && craftBookButton != null)
-            craftButtonText = craftBookButton.GetComponentInChildren<TextMeshProUGUI>();
-            
-        if (pageListContainer == null)
-            pageListContainer = GameObject.FindGameObjectWithTag("PageListContainer")?.transform;
-            
-        if (pageListScrollRect == null)
-            pageListScrollRect = GameObject.FindGameObjectWithTag("PageListScrollRect")?.GetComponent<ScrollRect>();
-            
-        // Find panels even if they're inactive
-        if (bookViewPanel == null)
-            bookViewPanel = GameObject.FindWithTag("BookViewPanel");
+        Debug.Log("Starting FindUIReferences");
         
-        if (bookViewPanel == null) // Try finding by name if tag doesn't work
-            bookViewPanel = FindInActiveObjectByName("BookViewPanel");
-            
-        if (pageDetailPanel == null)
-            pageDetailPanel = GameObject.FindWithTag("PageDetailPanel");
-            
-        if (pageDetailPanel == null) // Try finding by name if tag doesn't work
-            pageDetailPanel = FindInActiveObjectByName("PageDetailPanel");
+        // Find UI references by tag
+        FindUIElementByTag(ref coinCountText, "CoinCountText", "TextMeshProUGUI");
+        FindUIElementByTag(ref pageCountText, "PageCountText", "TextMeshProUGUI");
+        FindUIElementByTag(ref craftBookButton, "CraftBookButton", "Button");
+        FindUIElementByTag(ref pageListContainer, "PageListContainer", "Transform");
+        FindUIElementByTag(ref pageListScrollRect, "PageListScrollRect", "ScrollRect");
+        
+        // Find craft button text if we have the button
+        if (craftBookButton != null && craftButtonText == null)
+        {
+            craftButtonText = craftBookButton.GetComponentInChildren<TextMeshProUGUI>();
+            Debug.Log($"CraftButtonText found: {craftButtonText != null}");
+        }
+        
+        // Find panels
+        FindPanel(ref bookViewPanel, "BookViewPanel");
+        FindPanel(ref pageDetailPanel, "PageDetailPanel");
         
         // Find book view elements
         if (bookViewPanel != null)
         {
-            if (bookPageTitle == null)
-                bookPageTitle = bookViewPanel.GetComponentInChildren<TextMeshProUGUI>(true);
-                
-            if (bookPageContent == null)
-                bookPageContent = bookViewPanel.transform.Find("Content")?.GetComponent<TextMeshProUGUI>();
-                
-            if (nextPageButton == null)
-                nextPageButton = bookViewPanel.transform.Find("NextButton")?.GetComponent<Button>();
-                
-            if (prevPageButton == null)
-                prevPageButton = bookViewPanel.transform.Find("PrevButton")?.GetComponent<Button>();
-                
-            if (pageNumberText == null)
-                pageNumberText = bookViewPanel.transform.Find("PageNumber")?.GetComponent<TextMeshProUGUI>();
-                
-            if (closeBookButton == null)
-                closeBookButton = bookViewPanel.transform.Find("CloseButton")?.GetComponent<Button>();
+            Debug.Log("Searching for book view elements");
+            FindUIElementInPanel(ref bookPageTitle, bookViewPanel, "Title", "TextMeshProUGUI");
+            FindUIElementInPanel(ref bookPageContent, bookViewPanel, "Content", "TextMeshProUGUI");
+            FindUIElementInPanel(ref nextPageButton, bookViewPanel, "NextButton", "Button");
+            FindUIElementInPanel(ref prevPageButton, bookViewPanel, "PrevButton", "Button");
+            FindUIElementInPanel(ref pageNumberText, bookViewPanel, "PageNumber", "TextMeshProUGUI");
+            FindUIElementInPanel(ref closeBookButton, bookViewPanel, "CloseButton", "Button");
         }
         
         // Find page detail elements
         if (pageDetailPanel != null)
         {
-            if (pageDetailTitle == null)
-                pageDetailTitle = pageDetailPanel.transform.Find("Title")?.GetComponent<TextMeshProUGUI>();
-                
-            if (pageDetailContent == null)
-                pageDetailContent = pageDetailPanel.transform.Find("Content")?.GetComponent<TextMeshProUGUI>();
-                
-            if (closePageDetailButton == null)
-                closePageDetailButton = pageDetailPanel.transform.Find("CloseButton")?.GetComponent<Button>();
+            Debug.Log("Searching for page detail elements");
+            FindUIElementInPanel(ref pageDetailTitle, pageDetailPanel, "Title", "TextMeshProUGUI");
+            FindUIElementInPanel(ref pageDetailContent, pageDetailPanel, "Content", "TextMeshProUGUI");
+            FindUIElementInPanel(ref closePageDetailButton, pageDetailPanel, "CloseButton", "Button");
         }
-        
-        // Reset button listeners since they're lost when the scene reloads
-        SetupButtonListeners();
     }
     
+    private void FindUIElementByTag<T>(ref T component, string tag, string componentType) where T : Component
+    {
+        if (component == null)
+        {
+            GameObject obj = GameObject.FindGameObjectWithTag(tag);
+            if (obj != null)
+            {
+                component = obj.GetComponent<T>();
+                Debug.Log($"{tag} found: {component != null}");
+            }
+            else
+            {
+                Debug.LogWarning($"No GameObject found with tag: {tag}");
+            }
+        }
+    }
+
+    private void FindPanel(ref GameObject panel, string panelName)
+    {
+        if (panel == null)
+        {
+            // Try finding by tag first
+            panel = GameObject.FindWithTag(panelName);
+            Debug.Log($"{panelName} found by tag: {panel != null}");
+            
+            // If not found, try finding by name
+            if (panel == null)
+            {
+                panel = FindInActiveObjectByName(panelName);
+                Debug.Log($"{panelName} found by name: {panel != null}");
+            }
+        }
+    }
+
+    private void FindUIElementInPanel<T>(ref T component, GameObject panel, string elementName, string componentType) where T : Component
+    {
+        if (component == null)
+        {
+            // Try finding by exact name first
+            component = panel.transform.Find(elementName)?.GetComponent<T>();
+            Debug.Log($"{elementName} found by name: {component != null}");
+            
+            // If not found, try finding by component type
+            if (component == null)
+            {
+                component = panel.GetComponentInChildren<T>(true);
+                Debug.Log($"{elementName} found by component type: {component != null}");
+            }
+            
+            // If still not found, try finding by name pattern
+            if (component == null)
+            {
+                T[] allComponents = panel.GetComponentsInChildren<T>(true);
+                foreach (T comp in allComponents)
+                {
+                    if (comp.name.Contains(elementName))
+                    {
+                        component = comp;
+                        Debug.Log($"{elementName} found by name pattern: {comp.name}");
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     // Helper method to find inactive GameObjects by name
     private GameObject FindInActiveObjectByName(string name)
     {
@@ -499,10 +602,12 @@ public class BookManager : MonoBehaviour
     }
 
     // Close the page detail panel
-    private void ClosePageDetail()
+    public void ClosePageDetail()
     {
         if (pageDetailPanel)
+        {   Debug.Log("Closing page detail panel");
             pageDetailPanel.SetActive(false);
+        }
     }
 
     // Display the current page in the book view

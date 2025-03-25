@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using StudentRecruitment.EndlessRunner;
 
 namespace StudentRecruitment.EndlessRunner
 {
@@ -18,6 +19,13 @@ namespace StudentRecruitment.EndlessRunner
         [SerializeField] private float segmentLength = 20f;
         [SerializeField] private Transform trackParent;
         [SerializeField] private float laneDistance = 3f; // Should match RunnerController
+
+        [Header("Turn Settings")]
+        [SerializeField] private bool enableTurns = true; // Allow turning this feature on/off easily
+        [SerializeField] private float turnChance = 0.3f; // 30% chance for a turn after min segments
+        [SerializeField] private int minSegmentsBeforeTurn = 10; // Minimum straight segments before a turn
+        [SerializeField] private GameObject leftTurnPrefab; // Left turn track segment
+        [SerializeField] private GameObject rightTurnPrefab; // Right turn track segment
 
         [Header("Player Settings")]
         [SerializeField] private float initialSpeed = 10f;
@@ -66,6 +74,15 @@ namespace StudentRecruitment.EndlessRunner
         private float currentSpeed;
         private bool isSpeedBoosted = false;
         private Coroutine speedBoostCoroutine;
+
+        // Track generation state
+        private int segmentsSinceLastTurn = 0; // Counter for segments since last turn
+        private Vector3 currentTrackDirection = Vector3.forward; // Starts going forward (Z-axis)
+        private Vector3 currentTrackPosition = Vector3.zero; // Current position for track placement
+        private float currentSegmentLength = 0f; // Track current segment length
+
+        // Track the last turn direction to prevent consecutive turns in the same direction
+        private bool? lastTurnDirection = null; // null = no turn yet, true = left, false = right
 
         // Public static reference for access
         public static EndlessRunnerManager Instance { get; private set; }
@@ -182,47 +199,206 @@ namespace StudentRecruitment.EndlessRunner
                 return;
             }
 
-            float currentZPosition = 0f;
+            // Reset track generation variables
+            currentTrackPosition = Vector3.zero;
+            currentTrackDirection = Vector3.forward;
+            segmentsSinceLastTurn = 0;
+            lastTurnDirection = null; // Reset the last turn direction
 
             // Spawn regular track segments
             for (int i = 0; i < trackSegmentsToSpawn; i++)
             {
-                // Select a random track segment prefab
-                GameObject segmentPrefab = trackSegmentPrefabs[UnityEngine.Random.Range(0, trackSegmentPrefabs.Length)];
+                // Determine if this segment should be a turn - never allow the last segment to be a turn
+                bool shouldGenerateTurn = enableTurns && 
+                                          segmentsSinceLastTurn >= minSegmentsBeforeTurn && 
+                                          UnityEngine.Random.Range(0f, 1f) < turnChance &&
+                                          i < trackSegmentsToSpawn - 1; // Ensure last segment is not a turn
                 
-                // Instantiate the segment
-                GameObject segment = Instantiate(segmentPrefab, new Vector3(0, 0, currentZPosition), Quaternion.identity, trackParent);
+                GameObject segment;
+                
+                if (shouldGenerateTurn)
+                {
+                    // Generate a turn segment (left or right)
+                    segment = GenerateTurnSegment();
+                    segmentsSinceLastTurn = 0; // Reset counter after turn
+                }
+                else
+                {
+                    // Generate a straight segment
+                    segment = GenerateStraightSegment(i);
+                    segmentsSinceLastTurn++; // Increment counter for straight segments
+                }
+                
                 spawnedSegments.Add(segment);
-                
-                // Randomly add obstacle spawners near the end of each segment (except the last one)
-                if (i < trackSegmentsToSpawn - 1 && UnityEngine.Random.Range(0f, 1f) < obstacleSpawnChance)
-                {
-                    // Place obstacles at random positions along the segment
-                    float obstacleZ = currentZPosition + UnityEngine.Random.Range(segmentLength * 0.4f, segmentLength * 0.9f);
-                    SpawnObstacles(obstacleZ);
-                }
-                
-                // Spawn coins along the segment
-                if (coinPrefab != null && UnityEngine.Random.Range(0f, 1f) < coinSpawnChance)
-                {
-                    SpawnCoins(currentZPosition, segmentLength);
-                }
-                
-                // Spawn power-ups along the segment (more rare than coins)
-                if (powerUpPrefabs != null && powerUpPrefabs.Length > 0 && UnityEngine.Random.Range(0f, 1f) < powerUpSpawnChance)
-                {
-                    SpawnPowerUps(currentZPosition, segmentLength);
-                }
-                
-                // Move to next position
-                currentZPosition += segmentLength;
             }
 
             // Spawn finish line at the end
-            if (finishLinePrefab != null)
+            SpawnFinishLine();
+
+            // Calculate total track length (approximate)
+            totalTrackLength = trackSegmentsToSpawn * segmentLength;
+        }
+
+        private GameObject GenerateStraightSegment(int segmentIndex)
+        {
+            // Select a random track segment prefab
+            GameObject segmentPrefab = trackSegmentPrefabs[UnityEngine.Random.Range(0, trackSegmentPrefabs.Length)];
+            currentSegmentLength = segmentLength; // Store for later use
+            
+            // Calculate rotation based on current track direction
+            Quaternion segmentRotation = Quaternion.LookRotation(currentTrackDirection);
+            
+            // Instantiate the segment at the current position with proper rotation
+            GameObject segment = Instantiate(segmentPrefab, currentTrackPosition, segmentRotation, trackParent);
+            
+            // Ensure track segment has the "Track" tag
+            if (!segment.CompareTag("Track"))
             {
-                GameObject finishLine = Instantiate(finishLinePrefab, new Vector3(0, 0, currentZPosition - 5), Quaternion.identity, trackParent);
+                segment.tag = "Track";
+            }
+            
+            // Calculate center of the segment for obstacle and item placement
+            Vector3 segmentCenter = currentTrackPosition + (currentTrackDirection * segmentLength * 0.5f);
+            
+            // Randomly add obstacles (except the last segment)
+            if (segmentIndex < trackSegmentsToSpawn - 1 && UnityEngine.Random.Range(0f, 1f) < obstacleSpawnChance)
+            {
+                // Random position along the segment
+                float obstacleDistanceFromCenter = UnityEngine.Random.Range(-segmentLength * 0.3f, segmentLength * 0.3f);
+                Vector3 obstaclePosition = segmentCenter + (currentTrackDirection * obstacleDistanceFromCenter);
+                SpawnObstaclesAlongDirection(obstaclePosition);
+            }
+            
+            // Spawn coins along the segment
+            if (coinPrefab != null && UnityEngine.Random.Range(0f, 1f) < coinSpawnChance)
+            {
+                SpawnCoinsAlongDirection(segmentCenter, segmentLength, currentTrackDirection);
+            }
+            
+            // Spawn power-ups along the segment
+            if (powerUpPrefabs != null && powerUpPrefabs.Length > 0 && UnityEngine.Random.Range(0f, 1f) < powerUpSpawnChance)
+            {
+                SpawnPowerUpsAlongDirection(segmentCenter, segmentLength, currentTrackDirection);
+            }
+            
+            // Move to next position for the next segment
+            currentTrackPosition += currentTrackDirection * segmentLength;
+            
+            return segment;
+        }
+
+        private GameObject GenerateTurnSegment()
+        {
+            // Determine turn direction (left or right)
+            // If we had a previous turn, alternate the direction
+            bool isLeftTurn;
+            
+            if (lastTurnDirection.HasValue)
+            {
+                // Force alternating turns - if last turn was left, this one must be right and vice versa
+                isLeftTurn = !lastTurnDirection.Value;
+                Debug.Log($"Forcing alternating turn: Previous turn was {(lastTurnDirection.Value ? "left" : "right")}, this turn is {(isLeftTurn ? "left" : "right")}");
+            }
+            else
+            {
+                // First turn, randomly choose direction
+                isLeftTurn = UnityEngine.Random.Range(0f, 1f) > 0.5f;
+                Debug.Log($"First turn, randomly selected {(isLeftTurn ? "left" : "right")}");
+            }
+            
+            // Store this turn direction for next time
+            lastTurnDirection = isLeftTurn;
+            
+            GameObject turnPrefab = isLeftTurn ? leftTurnPrefab : rightTurnPrefab;
+            
+            // Use regular track prefab if specific turn prefabs aren't assigned
+            if (turnPrefab == null)
+            {
+                turnPrefab = trackSegmentPrefabs[0];
+                Debug.LogWarning("Turn prefab not assigned. Using regular track segment.");
+            }
+            
+            // Calculate rotation for the turn
+            float turnAngle = isLeftTurn ? -90f : 90f;
+            
+            // Current rotation before turn
+            Quaternion currentRotation = Quaternion.LookRotation(currentTrackDirection);
+            
+            // Instantiate the turn segment
+            GameObject turnSegment = Instantiate(turnPrefab, currentTrackPosition, currentRotation, trackParent);
+            
+            // Ensure track segment has the "Track" tag
+            if (!turnSegment.CompareTag("Track"))
+            {
+                turnSegment.tag = "Track";
+            }
+            
+            // ===== Create a larger centering trigger before the turn =====
+            GameObject centeringTrigger = new GameObject("LaneCenteringTrigger");
+            centeringTrigger.transform.SetParent(turnSegment.transform);
+            // Position it before the turn trigger (farther back from the start of the segment)
+            centeringTrigger.transform.localPosition = new Vector3(0, 0, -10f);
+            centeringTrigger.transform.localRotation = Quaternion.identity;
+            centeringTrigger.tag = "CenterLane"; // Special tag for lane centering
+            
+            // Add a box collider as trigger
+            BoxCollider centeringCollider = centeringTrigger.AddComponent<BoxCollider>();
+            centeringCollider.isTrigger = true;
+            centeringCollider.size = new Vector3(laneDistance * 6, 5f, 8f); // Much wider and longer than turn trigger
+            centeringCollider.center = new Vector3(0, 1.5f, 0); // Centered at player height
+            
+            // Add LaneCenteringTrigger component
+            LaneCenteringTrigger centeringComponent = centeringTrigger.AddComponent<LaneCenteringTrigger>();
+            
+            // ===== Create the regular turn trigger =====
+            GameObject triggerZone = new GameObject("TurnTriggerZone");
+            triggerZone.transform.SetParent(turnSegment.transform);
+            triggerZone.transform.localPosition = Vector3.zero; // Start of the segment
+            triggerZone.transform.localRotation = Quaternion.identity;
+            triggerZone.tag = "Track"; // Important: must have the same tag
+            
+            // Add a box collider as trigger
+            BoxCollider triggerCollider = triggerZone.AddComponent<BoxCollider>();
+            triggerCollider.isTrigger = true;
+            triggerCollider.size = new Vector3(laneDistance * 3, 3f, 1f); // Wide enough for all lanes, tall enough for jumping player
+            triggerCollider.center = new Vector3(0, 1.5f, 0); // Centered at player height
+            
+            // Add TurnTrigger component to the trigger zone
+            TurnTrigger turnTrigger = triggerZone.AddComponent<TurnTrigger>();
+            
+            // SIMPLIFY: We only need to set the isLeftTurn field, no need for complex exit direction calculation
+            typeof(TurnTrigger).GetField("isLeftTurn", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.SetValue(turnTrigger, isLeftTurn);
+            typeof(TurnTrigger).GetField("turnAngle", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.SetValue(turnTrigger, 90f); // Always use 90 degrees
+            
+            // Store a reference to mark the turn trigger for debugging
+            turnTrigger.gameObject.name = isLeftTurn ? "LeftTurnTrigger" : "RightTurnTrigger";
+            
+            // Calculate new direction after the turn - this is still needed for track generation
+            currentTrackDirection = Quaternion.Euler(0, isLeftTurn ? -90 : 90, 0) * currentTrackDirection;
+            
+            // Update position for the next segment
+            currentTrackPosition += currentTrackDirection * segmentLength;
+            
+            Debug.Log($"Generated {(isLeftTurn ? "left" : "right")} turn at {turnSegment.transform.position}. Turn angle: {(isLeftTurn ? -90 : 90)}, New direction: {currentTrackDirection}");
+            
+            return turnSegment;
+        }
+
+        private void SpawnFinishLine()
+        {
+            if (finishLinePrefab != null && spawnedSegments.Count >= 1)
+            {
+                // Get the last segment's position
+                GameObject lastSegment = spawnedSegments[spawnedSegments.Count - 1];
+                Vector3 finishPosition = lastSegment.transform.position;
+                Debug.Log($"Last segment position: {finishPosition}");
+                
+                Quaternion finishRotation = Quaternion.LookRotation(currentTrackDirection, Vector3.up);
+                
+                GameObject finishLine = Instantiate(finishLinePrefab, finishPosition, finishRotation, trackParent);
                 spawnedSegments.Add(finishLine);
+                
+                Debug.Log($"Finish line spawned at position: {finishLine.transform.position}");
                 
                 // Make sure the finish line has a trigger collider and the "Finish" tag
                 if (!finishLine.CompareTag("Finish"))
@@ -236,13 +412,10 @@ namespace StudentRecruitment.EndlessRunner
                     finishCollider.isTrigger = true;
                 }
             }
-
-            // Calculate total track length
-            totalTrackLength = currentZPosition;
         }
 
-        // Method to spawn obstacles
-        private void SpawnObstacles(float zPosition)
+        // Modified to spawn obstacles along the current track direction
+        private void SpawnObstaclesAlongDirection(Vector3 position)
         {
             // Skip if no obstacle prefabs are assigned
             if (obstaclePrefabs == null || obstaclePrefabs.Length == 0)
@@ -254,170 +427,99 @@ namespace StudentRecruitment.EndlessRunner
             // Choose a random lane (0, 1, 2)
             int lane = UnityEngine.Random.Range(0, 3);
             
-            // Calculate position based on lane
-            float xPosition = (lane - 1) * laneDistance;
-            Vector3 obstaclePosition = new Vector3(xPosition, 0, zPosition);
+            // Calculate position based on lane - perpendicular to track direction
+            Vector3 rightVector = Vector3.Cross(Vector3.up, currentTrackDirection).normalized;
+            float xOffset = (lane - 1) * laneDistance; // Convert lane to offset
+            Vector3 obstaclePosition = position + (rightVector * xOffset);
             
             // Choose a random obstacle prefab
             GameObject obstaclePrefab = obstaclePrefabs[UnityEngine.Random.Range(0, obstaclePrefabs.Length)];
             
-            // Instantiate with prefab's original rotation instead of Quaternion.identity
-            GameObject obstacle = Instantiate(obstaclePrefab, obstaclePosition, obstaclePrefab.transform.rotation);
+            // Rotation aligned with track
+            Quaternion trackRotation = Quaternion.LookRotation(currentTrackDirection, Vector3.up);
+            
+            // Instantiate with proper rotation
+            GameObject obstacle = Instantiate(obstaclePrefab, obstaclePosition, trackRotation);
             
             // Add to spawned segments list to track
             spawnedSegments.Add(obstacle);
         }
 
-        // New method to spawn coins with collision detection
-        private void SpawnCoins(float segmentStart, float segmentLength)
+        // New method to spawn coins along a direction
+        private void SpawnCoinsAlongDirection(Vector3 centerPosition, float segmentLength, Vector3 direction)
         {
+            // Skip if coin prefab is null
             if (coinPrefab == null) return;
             
-            // Determine number of coins to spawn
-            int coinCount = UnityEngine.Random.Range(1, maxCoinsPerSegment + 1);
-            int spawnedCoins = 0;
-            int maxAttempts = coinCount * 5; // Allow multiple attempts per coin
-            int attempts = 0;
+            // Calculate right vector perpendicular to the track direction
+            Vector3 rightVector = Vector3.Cross(Vector3.up, direction).normalized;
             
-            while (spawnedCoins < coinCount && attempts < maxAttempts)
+            // Calculate how many coins to spawn
+            int coinsToSpawn = UnityEngine.Random.Range(1, maxCoinsPerSegment + 1);
+            
+            for (int i = 0; i < coinsToSpawn; i++)
             {
-                attempts++;
+                // Choose a random lane
+                int lane = UnityEngine.Random.Range(0, 3);
                 
-                // Random lane
-                int lane = UnityEngine.Random.Range(-1, 2);
+                // Random position along segment
+                float zOffset = UnityEngine.Random.Range(-segmentLength * 0.4f, segmentLength * 0.4f);
                 
-                // Random z position within segment (avoid very start and very end)
-                float zPos = segmentStart + UnityEngine.Random.Range(segmentLength * 0.1f, segmentLength * 0.9f);
+                // Calculate position based on lane - perpendicular to track direction
+                float xOffset = (lane - 1) * laneDistance; // Convert lane to offset
+                Vector3 coinPosition = centerPosition + (direction * zOffset) + (rightVector * xOffset);
+                coinPosition.y += 1f; // Raise coins slightly above the ground
                 
-                // Check if position is clear before spawning
-                if (IsPositionClear(lane, zPos))
+                // Rotation aligned with track
+                Quaternion coinRotation = Quaternion.LookRotation(direction, Vector3.up);
+                
+                // Check if position is clear
+                if (IsPositionClear(coinPosition, 1.0f))
                 {
-                    // Calculate position
-                    float xPos = lane * laneDistance;
-                    float yPos = 1.0f; // Height above ground
-                    
-                    // Instantiate coin
-                    GameObject coin = Instantiate(coinPrefab, new Vector3(xPos, yPos, zPos), Quaternion.identity, trackParent);
-                    
-                    // Ensure it has the right tag
-                    coin.tag = "Coin";
-                    
-                    // Add to spawned objects
+                    GameObject coin = Instantiate(coinPrefab, coinPosition, coinRotation);
                     spawnedSegments.Add(coin);
-                    
-                    spawnedCoins++;
                 }
-            }
-            
-            if (spawnedCoins < coinCount)
-            {
-                Debug.Log($"Could only spawn {spawnedCoins}/{coinCount} coins due to space constraints");
             }
         }
 
-        private void SpawnObstacle(int lane, float zPosition)
+        // New method to spawn power-ups along a direction
+        private void SpawnPowerUpsAlongDirection(Vector3 centerPosition, float segmentLength, Vector3 direction)
         {
-            if (obstaclePrefabs == null || obstaclePrefabs.Length == 0) return;
+            // Skip if no power-up prefabs
+            if (powerUpPrefabs == null || powerUpPrefabs.Length == 0) return;
             
-            // Select random obstacle prefab
-            GameObject obstaclePrefab = obstaclePrefabs[UnityEngine.Random.Range(0, obstaclePrefabs.Length)];
+            // Calculate right vector perpendicular to the track direction
+            Vector3 rightVector = Vector3.Cross(Vector3.up, direction).normalized;
             
-            // Calculate lane position
-            float xPosition = lane * laneDistance;
+            // Calculate how many power-ups to spawn
+            int powerUpsToSpawn = Mathf.Min(UnityEngine.Random.Range(0, maxPowerUpsPerSegment + 1), powerUpPrefabs.Length);
             
-            // Randomly offset the position slightly to avoid perfect alignment
-            float xOffset = UnityEngine.Random.Range(-0.2f, 0.2f);
-            float zOffset = UnityEngine.Random.Range(-0.5f, 0.5f);
-            
-            // Make a final check if the position is clear with offsets
-            if (!IsPositionClear(xPosition + xOffset, zPosition + zOffset, 1.5f)) // Larger radius for final check
+            for (int i = 0; i < powerUpsToSpawn; i++)
             {
-                Debug.Log($"Position ({xPosition}, {zPosition}) no longer clear with offsets, aborting spawn");
-                return;
-            }
-            
-            // Instantiate obstacle - use prefab's original rotation instead of Quaternion.identity
-            GameObject obstacle = Instantiate(obstaclePrefab, 
-                new Vector3(xPosition + xOffset, 0, zPosition + zOffset), 
-                obstaclePrefab.transform.rotation, trackParent);
-            
-            // Ensure it has the right tag
-            obstacle.tag = "Obstacle";
-            
-            // Add to spawned objects for later cleanup
-            spawnedSegments.Add(obstacle);
-        }
-        
-        // Helper method to check if a position is clear (no obstacles, coins or power-ups)
-        private bool IsPositionClear(int lane, float zPosition)
-        {
-            float xPosition = lane * laneDistance;
-            return IsPositionClear(xPosition, zPosition, 2.0f); // Default check radius
-        }
-        
-        private bool IsPositionClear(float xPosition, float zPosition, float checkRadius = 2.0f)
-        {
-            // Position to check (y position is 1.0 to check for hovering items)
-            Vector3 checkPosition = new Vector3(xPosition, 1.0f, zPosition);
-            
-            // Check for any colliders at this position
-            Collider[] hitColliders = Physics.OverlapSphere(checkPosition, checkRadius);
-            
-            foreach (Collider collider in hitColliders)
-            {
-                // Skip these tags if they exist, otherwise use a try-catch to avoid errors
-                try
-                {
-                    // These are the tags we want to ignore (safe objects to overlap with)
-                    string[] ignoreTags = new string[] { "Track", "Finish", "Ground", "Player" };
-                    
-                    bool shouldIgnore = false;
-                    foreach (string tag in ignoreTags) 
-                    {
-                        // Try to safely check the tag - if the tag doesn't exist, this will just return false
-                        if (collider.gameObject.CompareTag(tag))
-                        {
-                            shouldIgnore = true;
-                            break;
-                        }
-                    }
-                    
-                    if (shouldIgnore)
-                    {
-                        continue;
-                    }
-                }
-                catch (UnityException)
-                {
-                    // Tag not defined, just continue with collision check
-                    // We'll check the layer instead as a fallback
-                    if (collider.gameObject.layer == LayerMask.NameToLayer("Default") || 
-                        collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
-                    {
-                        continue;
-                    }
-                }
+                // Choose a random lane
+                int lane = UnityEngine.Random.Range(0, 3);
                 
-                // If we found any other collider, position is not clear
-                return false;
-            }
-            
-            return true;
-        }
-        
-        // Helper method to shuffle an array (Fisher-Yates algorithm)
-        private void ShuffleArray<T>(T[] array)
-        {
-            int n = array.Length;
-            for (int i = 0; i < n; i++)
-            {
-                // Get random index from i to end
-                int r = i + UnityEngine.Random.Range(0, n - i);
+                // Random position along segment
+                float zOffset = UnityEngine.Random.Range(-segmentLength * 0.4f, segmentLength * 0.4f);
                 
-                // Swap elements
-                T temp = array[i];
-                array[i] = array[r];
-                array[r] = temp;
+                // Calculate position based on lane - perpendicular to track direction
+                float xOffset = (lane - 1) * laneDistance; // Convert lane to offset
+                Vector3 powerUpPosition = centerPosition + (direction * zOffset) + (rightVector * xOffset);
+                powerUpPosition.y += 1f; // Raise power-ups slightly above the ground
+                
+                // Rotation aligned with track
+                Quaternion powerUpRotation = Quaternion.LookRotation(direction, Vector3.up);
+                
+                // Check if position is clear
+                if (IsPositionClear(powerUpPosition, 1.5f))
+                {
+                    int powerUpIndex = UnityEngine.Random.Range(0, powerUpPrefabs.Length);
+                    GameObject powerUp = Instantiate(powerUpPrefabs[powerUpIndex], powerUpPosition, powerUpRotation);
+                    spawnedSegments.Add(powerUp);
+                    
+                    // Start animation coroutine for the power-up
+                    StartCoroutine(AnimatePowerUp(powerUp.transform));
+                }
             }
         }
 
@@ -740,46 +842,50 @@ namespace StudentRecruitment.EndlessRunner
         // New method to regenerate gameplay objects on existing track
         private void RegenerateGameplayObjects()
         {
-            // Find all track segments
-            GameObject[] trackSegments = GameObject.FindGameObjectsWithTag("Track");
+            // Reset track generation state
+            segmentsSinceLastTurn = 0;
+            currentTrackDirection = Vector3.forward;
             
-            // If no track segments found or if we never generated a track, create a new one
-            if (trackSegments.Length == 0 || spawnedSegments.Count == 0)
+            Debug.Log($"Regenerating gameplay objects on {spawnedSegments.Count} existing track segments");
+
+            // Generate gameplay objects on existing track segments
+            for (int i = 0; i < spawnedSegments.Count; i++)
             {
-                Debug.Log("No track segments found, generating new track");
-                GenerateTrack();
-                return;
-            }
-            
-            Debug.Log($"Regenerating gameplay objects on {trackSegments.Length} existing track segments");
-            
-            // Sort track segments by Z position to maintain order
-            System.Array.Sort(trackSegments, (a, b) => a.transform.position.z.CompareTo(b.transform.position.z));
-            
-            // Spawn gameplay objects on each segment
-            for (int i = 0; i < trackSegments.Length; i++)
-            {
-                float segmentStart = trackSegments[i].transform.position.z;
+                Transform segment = spawnedSegments[i].transform;
                 
-                // Randomly add obstacles (except on the last segment)
-                if (i < trackSegments.Length - 1 && UnityEngine.Random.Range(0f, 1f) < obstacleSpawnChance)
+                // Skip if not a track segment (might be a power-up or obstacle)
+                if (!spawnedSegments[i].CompareTag("Track")) continue;
+                
+                // Get segment position and direction
+                Vector3 segmentPosition = segment.position;
+                currentTrackDirection = segment.forward;
+                
+                // Random chance for obstacles
+                if (UnityEngine.Random.Range(0f, 1f) < obstacleSpawnChance)
                 {
-                    float obstacleZ = segmentStart + UnityEngine.Random.Range(segmentLength * 0.4f, segmentLength * 0.9f);
-                    SpawnObstacles(obstacleZ);
+                    // Position obstacles randomly along the segment
+                    Vector3 obstaclePosition = segmentPosition + currentTrackDirection * 
+                        (segmentLength * UnityEngine.Random.Range(0.4f, 0.9f));
+                    SpawnObstaclesAlongDirection(obstaclePosition);
                 }
                 
-                // Spawn coins
+                // Random chance for coins
                 if (coinPrefab != null && UnityEngine.Random.Range(0f, 1f) < coinSpawnChance)
                 {
-                    SpawnCoins(segmentStart, segmentLength);
+                    SpawnCoinsAlongDirection(segmentPosition + currentTrackDirection * (segmentLength * 0.5f), 
+                                          segmentLength, currentTrackDirection);
                 }
                 
-                // Spawn power-ups (more rare)
-                if (powerUpPrefabs != null && powerUpPrefabs.Length > 0 && UnityEngine.Random.Range(0f, 1f) < powerUpSpawnChance)
+                // Random chance for power-ups
+                if (powerUpPrefabs != null && powerUpPrefabs.Length > 0 && 
+                    UnityEngine.Random.Range(0f, 1f) < powerUpSpawnChance)
                 {
-                    SpawnPowerUps(segmentStart, segmentLength);
+                    SpawnPowerUpsAlongDirection(segmentPosition + currentTrackDirection * (segmentLength * 0.5f), 
+                                         segmentLength, currentTrackDirection);
                 }
             }
+            
+            Debug.Log("Gameplay objects regenerated successfully");
         }
 
         // Method to spawn power-ups with collision detection
@@ -887,8 +993,9 @@ namespace StudentRecruitment.EndlessRunner
             {
                 if (CurrentGameState == GameState.Running)
                 {
-                    // Get current player z position to determine culling
-                    float playerZ = playerTransform.position.z;
+                    // Get current player position
+                    Vector3 playerPosition = playerTransform.position;
+                    Vector3 playerForward = playerTransform.forward;
                     
                     // Loop through all spawned objects
                     for (int i = spawnedSegments.Count - 1; i >= 0; i--)
@@ -901,20 +1008,36 @@ namespace StudentRecruitment.EndlessRunner
                         }
                         
                         GameObject obj = spawnedSegments[i];
-                        float objDistance = obj.transform.position.z - playerZ;
+                        
+                        // Never cull the finish line or turn triggers
+                        if (obj.CompareTag("Finish") || obj.name.Contains("TurnTrigger"))
+                        {
+                            // Apply LOD but never cull these important objects
+                            ApplyLevelOfDetail(obj, Vector3.Distance(obj.transform.position, playerPosition));
+                            continue;
+                        }
+                        
+                        // Calculate vector from player to object
+                        Vector3 playerToObj = obj.transform.position - playerPosition;
+                        
+                        // Project this vector onto player's forward direction to see if it's behind
+                        float projectionOnPlayerForward = Vector3.Dot(playerToObj, playerForward);
                         
                         // Check if object is behind the player beyond the culling distance
-                        if (objDistance < -cullingDistance)
+                        // Only remove objects that are definitively behind the player in the direction they're facing
+                        if (projectionOnPlayerForward < -cullingDistance)
                         {
                             // Remove and destroy object
                             spawnedSegments.RemoveAt(i);
                             Destroy(obj);
+                            continue;
                         }
-                        else
-                        {
-                            // Apply LOD (Level of Detail) based on distance
-                            ApplyLevelOfDetail(obj, objDistance);
-                        }
+                        
+                        // Calculate actual distance for LOD
+                        float distance = Vector3.Distance(playerPosition, obj.transform.position);
+                        
+                        // Apply LOD based on actual distance
+                        ApplyLevelOfDetail(obj, distance);
                     }
                 }
                 
@@ -930,20 +1053,23 @@ namespace StudentRecruitment.EndlessRunner
             if (obj == null) return;
             
             // Skip objects tagged for special treatment
-            if (obj.CompareTag("Player") || obj.CompareTag("Finish")) return;
+            if (obj.CompareTag("Player")) return;
+            
+            // Always keep finish line and turn triggers visible
+            bool isImportantObject = obj.CompareTag("Finish") || obj.name.Contains("TurnTrigger");
             
             // Get all renderers and LOD groups
             Renderer[] renderers = obj.GetComponentsInChildren<Renderer>();
             LODGroup lodGroup = obj.GetComponent<LODGroup>();
             
             // If the object has a LOD group, Unity will handle LOD automatically
-            if (lodGroup != null) return;
+            if (lodGroup != null && !isImportantObject) return;
             
             // Distance checks - define visibility zones
-            bool isNearZone = Mathf.Abs(distance) < 30f;                   // Full detail zone (<30 units)
-            bool isMidZone = distance >= 30f && distance < 60f;            // Mid detail zone (30-60 units)
+            bool isNearZone = distance < 30f;                   // Full detail zone (<30 units)
+            bool isMidZone = distance >= 30f && distance < 60f; // Mid detail zone (30-60 units)
             bool isFarZone = distance >= 60f && distance < visibilityDistance; // Far detail zone (60-visibility distance)
-            bool isOutOfRange = Mathf.Abs(distance) >= visibilityDistance;    // Out of range
+            bool isOutOfRange = distance >= visibilityDistance && !isImportantObject; // Out of range (but always keep important objects)
             
             foreach (Renderer renderer in renderers)
             {
@@ -1033,6 +1159,87 @@ namespace StudentRecruitment.EndlessRunner
         {
             // Stop all coroutines when disabled
             StopAllCoroutines();
+        }
+
+        // Helper method to check if a position is clear (no obstacles, coins or power-ups)
+        private bool IsPositionClear(Vector3 position, float checkRadius = 2.0f)
+        {
+            // Check for any colliders at this position
+            Collider[] hitColliders = Physics.OverlapSphere(position, checkRadius);
+            
+            foreach (Collider collider in hitColliders)
+            {
+                // Skip these tags if they exist, otherwise use a try-catch to avoid errors
+                try
+                {
+                    // These are the tags we want to ignore (safe objects to overlap with)
+                    string[] ignoreTags = new string[] { "Track", "Finish", "Ground", "Player" };
+                    
+                    bool shouldIgnore = false;
+                    foreach (string tag in ignoreTags) 
+                    {
+                        // Try to safely check the tag - if the tag doesn't exist, this will just return false
+                        if (collider.gameObject.CompareTag(tag))
+                        {
+                            shouldIgnore = true;
+                            break;
+                        }
+                    }
+                    
+                    if (shouldIgnore)
+                    {
+                        continue;
+                    }
+                }
+                catch (UnityException)
+                {
+                    // Tag not defined, just continue with collision check
+                    // We'll check the layer instead as a fallback
+                    if (collider.gameObject.layer == LayerMask.NameToLayer("Default") || 
+                        collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
+                    {
+                        continue;
+                    }
+                }
+                
+                // If we found any other collider, position is not clear
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Overload for IsPositionClear that takes lane, zPos, and checkRadius
+        private bool IsPositionClear(int lane, float zPos, float checkRadius = 2.0f)
+        {
+            // Calculate position based on lane and z-position
+            float xPos = lane * laneDistance;
+            float yPos = 1f; // Height above ground
+            
+            // Calculate right vector perpendicular to the track direction
+            Vector3 rightVector = Vector3.Cross(Vector3.up, currentTrackDirection).normalized;
+            
+            // Calculate the actual position with the current track direction
+            Vector3 position = new Vector3(0, yPos, zPos) + (rightVector * xPos);
+            
+            // Use the existing method to check if the position is clear
+            return IsPositionClear(position, checkRadius);
+        }
+
+        // Helper method to shuffle an array (Fisher-Yates algorithm)
+        private void ShuffleArray<T>(T[] array)
+        {
+            int n = array.Length;
+            for (int i = 0; i < n; i++)
+            {
+                // Get random index from i to end
+                int r = i + UnityEngine.Random.Range(0, n - i);
+                
+                // Swap elements
+                T temp = array[i];
+                array[i] = array[r];
+                array[r] = temp;
+            }
         }
     }
 } 

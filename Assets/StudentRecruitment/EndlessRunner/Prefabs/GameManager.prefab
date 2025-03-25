@@ -49,5 +49,5 @@ MonoBehaviour:
   uiManagerPrefab: {fileID: 0}
   cursorManagerPrefab: {fileID: 0}
   pauseManagerPrefab: {fileID: 0}
-  gameStartDelay: 2
+  gameStartDelay: 5
   isDebugMode: 0

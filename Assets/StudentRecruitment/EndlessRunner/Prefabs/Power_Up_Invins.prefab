@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 4899778621250243490}
   m_Layer: 0
   m_Name: Power_Up_Invins
-  m_TagString: Untagged
+  m_TagString: PowerUp
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
