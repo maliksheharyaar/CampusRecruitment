@@ -276,11 +276,11 @@ namespace StudentRecruitment.EndlessRunner
                 OnMoveRightInput();
             }
             
-            // Pause
-            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
-            {
-                OnPauseInput();
-            }
+            // // Pause
+            // if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
+            // {
+            //     OnPauseInput();
+            // }
         }
         
         // Handle bounce back effect after hitting obstacle

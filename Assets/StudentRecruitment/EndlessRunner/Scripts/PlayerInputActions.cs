@@ -20,7 +20,7 @@ namespace StudentRecruitment.EndlessRunner
         private InputAction _jumpAction;
         private InputAction _moveLeftAction;
         private InputAction _moveRightAction;
-        private InputAction _pauseAction;
+        // private InputAction _pauseAction;
         
         public PlayerInputActions()
         {
@@ -46,16 +46,16 @@ namespace StudentRecruitment.EndlessRunner
             _moveRightAction.AddBinding("<Keyboard>/d");
             _moveRightAction.AddBinding("<Keyboard>/rightArrow");
             
-            _pauseAction = _playerMap.AddAction("Pause", InputActionType.Button);
-            _pauseAction.AddBinding("<Keyboard>/escape");
-            _pauseAction.AddBinding("<Keyboard>/p");
+            // _pauseAction = _playerMap.AddAction("Pause", InputActionType.Button);
+            // _pauseAction.AddBinding("<Keyboard>/escape");
+            // _pauseAction.AddBinding("<Keyboard>/p");
         }
         
         // Public action accessors
         public InputAction JumpAction => _jumpAction;
         public InputAction MoveLeftAction => _moveLeftAction;
         public InputAction MoveRightAction => _moveRightAction;
-        public InputAction PauseAction => _pauseAction;
+        //public InputAction PauseAction => _pauseAction;
         
         // Enable/disable input
         public void Enable() => _playerMap.Enable();
@@ -73,13 +73,13 @@ namespace StudentRecruitment.EndlessRunner
             _jumpAction.performed += ctx => controller.OnJumpInput();
             _moveLeftAction.performed += ctx => controller.OnMoveLeftInput();
             _moveRightAction.performed += ctx => controller.OnMoveRightInput();
-            _pauseAction.performed += ctx => controller.OnPauseInput();
+            //_pauseAction.performed += ctx => controller.OnPauseInput();
             
             return new ActionDisposable(() => {
                 _jumpAction.performed -= ctx => controller.OnJumpInput();
                 _moveLeftAction.performed -= ctx => controller.OnMoveLeftInput();
                 _moveRightAction.performed -= ctx => controller.OnMoveRightInput();
-                _pauseAction.performed -= ctx => controller.OnPauseInput();
+               // _pauseAction.performed -= ctx => controller.OnPauseInput();
                 return null;
             });
         }

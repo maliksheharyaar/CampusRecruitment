@@ -12,7 +12,7 @@ namespace StudentRecruitment.EndlessRunner
         [SerializeField] private Button returnToMainMenuButton;
 
         [Header("Settings")]
-        [SerializeField] private KeyCode pauseKey = KeyCode.Escape;
+        [SerializeField] private KeyCode pauseKey;
         
         private bool isPaused = false;
         private UIManager uiManager;
