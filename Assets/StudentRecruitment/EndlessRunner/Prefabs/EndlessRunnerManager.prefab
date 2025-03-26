@@ -56,24 +56,24 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   trackSegmentsToSpawn: 30
-  segmentLength: 30
+  segmentLength: 20
   trackParent: {fileID: 0}
   laneDistance: 6
   enableTurns: 1
   turnChance: 0.5
-  minSegmentsBeforeTurn: 2
+  minSegmentsBeforeTurn: 4
   leftTurnPrefab: {fileID: 0}
   rightTurnPrefab: {fileID: 0}
-  initialSpeed: 20
+  initialSpeed: 15
   maxSpeed: 25
   acceleration: 0.1
   speedBoostMultiplier: 1.5
   speedBoostDuration: 5
-  obstacleSpawnChance: 1.13
-  coinSpawnChance: 0.41
-  powerUpSpawnChance: 0.81
-  maxCoinsPerSegment: 1
-  maxPowerUpsPerSegment: 1
+  obstacleSpawnChance: 0.55
+  coinSpawnChance: 0.5
+  powerUpSpawnChance: 0.49
+  maxCoinsPerSegment: 2
+  maxPowerUpsPerSegment: 2
   playerController: {fileID: 0}
   boulder: {fileID: 0}
   powerUpDuration: 3

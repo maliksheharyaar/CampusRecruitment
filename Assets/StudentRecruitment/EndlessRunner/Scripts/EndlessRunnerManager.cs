@@ -16,7 +16,7 @@ namespace StudentRecruitment.EndlessRunner
         [SerializeField] private GameObject coinPrefab;
         [SerializeField] private GameObject[] powerUpPrefabs; // Power-up prefabs array
         [SerializeField] private int trackSegmentsToSpawn = 10;
-        [SerializeField] private float segmentLength = 20f;
+        [SerializeField] private float segmentLength = 40f; // Changed from 20f to 40f
         [SerializeField] private Transform trackParent;
         [SerializeField] private float laneDistance = 3f; // Should match RunnerController
 
