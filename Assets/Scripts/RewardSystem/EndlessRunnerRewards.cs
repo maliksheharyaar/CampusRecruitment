@@ -11,6 +11,21 @@ public class EndlessRunnerRewards : MonoBehaviour
     private List<int> availablePageIndices = new List<int>();
     private bool rewardsProcessed = false;
 
+    // Add page titles array
+    private readonly string[] pageTitles = new string[]
+    {
+        "Intro to Business Administration",
+        "Year 1 (Business Fundamentals)",
+        "Year 2 (Advanced Business Concepts)",
+        "Year 3 (Business Strategy)",
+        "Year 4 (Business Leadership)",
+        "Year 5 (Business Innovation)",
+        "Year 6 (Business Excellence)",
+        "Year 7 (Business Mastery)",
+        "Year 8 (Business Legacy)",
+        "Year 9 (Business Evolution)"
+    };
+
     private void Awake()
     {
         // Find the EndlessRunnerManager
@@ -132,10 +147,18 @@ public class EndlessRunnerRewards : MonoBehaviour
     // Save rewards to PlayerPrefs for BookManager to pick up
     private void SaveRewards(int coins, int pageIndex)
     {
-        PlayerPrefs.SetInt("PendingRewardCoins", coins);
-        PlayerPrefs.SetInt("PendingRewardPage", pageIndex);
-        PlayerPrefs.SetInt("HasPendingRewards", 1);
-        PlayerPrefs.Save();
+        // Save coins
+        GameProgress.AddCoins(coins);
+        
+        // Save page if earned
+        if (pageIndex >= 0)
+        {
+            GameProgress.AwardBusinessPage();
+            // Store the page index for BookManager to display
+            PlayerPrefs.SetInt("PendingRewardPage", pageIndex);
+            PlayerPrefs.SetInt("HasPendingRewards", 1);
+            PlayerPrefs.Save();
+        }
         
         Debug.Log($"Saved rewards: {coins} coins and page #{pageIndex}");
     }

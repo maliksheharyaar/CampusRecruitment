@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,6 +22,10 @@ namespace StudentRecruitment.EndlessRunner
 
         // Max number of pages per program
         public const int MAX_BUSINESS_PAGES = 5;
+
+        // Events
+        public static event Action<string, string> OnPageUnlocked;
+        public static event Action<string> OnBookCrafted;
 
         // Cache the loaded data
         private static int coins = -1;
@@ -151,6 +156,10 @@ namespace StudentRecruitment.EndlessRunner
             businessPagesCollected++;
             newPageAwarded = true;
             lastAwardedPage = businessPagesCollected - 1;
+            
+            // Trigger the page unlock event
+            OnPageUnlocked?.Invoke(BUSINESS_PROGRAM, $"Business Page {businessPagesCollected}");
+            
             SaveProgress();
             return true;
         }
@@ -201,40 +210,58 @@ namespace StudentRecruitment.EndlessRunner
                 Debug.Log("Cannot craft business book: missing pages");
                 return false;
             }
-            
+
+            // Check if we have enough coins
             if (coins < BOOK_CRAFT_COST)
             {
                 Debug.Log($"Cannot craft business book: insufficient coins ({coins}/{BOOK_CRAFT_COST})");
                 return false;
             }
-            
-            // Deduct coins and mark as crafted
+
+            // Craft the book
             coins -= BOOK_CRAFT_COST;
             businessBookCrafted = true;
-            SaveProgress();
             
+            // Trigger the book crafted event
+            OnBookCrafted?.Invoke(BUSINESS_PROGRAM);
+            
+            SaveProgress();
             Debug.Log("Business book crafted successfully!");
             return true;
         }
 
-        // Get crafting requirements for business book
+        // Get the requirements for crafting the business book
         public static (int requiredPages, int requiredCoins) GetBusinessBookRequirements()
         {
             return (BUSINESS_PAGES_COUNT, BOOK_CRAFT_COST);
         }
 
-        // Reset all progress (for debugging)
+        // Reset all progress
         public static void ResetAllProgress()
         {
+            // Reset all cached values
             coins = 0;
             businessPages.Clear();
-            businessPagesCollected = 0;
             businessBookCrafted = false;
-            newPageAwarded = false;
+            businessPagesCollected = 0;
             lastAwardedPage = -1;
-            
-            SaveProgress();
-            Debug.Log("All game progress reset!");
+            newPageAwarded = false;
+
+            // Clear all PlayerPrefs keys
+            PlayerPrefs.DeleteKey(COINS_KEY);
+            PlayerPrefs.DeleteKey(BUSINESS_PAGES_KEY);
+            PlayerPrefs.DeleteKey(BUSINESS_BOOK_CRAFTED);
+            PlayerPrefs.DeleteKey(LAST_AWARDED_PAGE_KEY);
+            PlayerPrefs.DeleteKey(NEW_PAGE_AWARDED_KEY);
+
+            // Clear individual page keys
+            for (int i = 0; i < BUSINESS_PAGES_COUNT; i++)
+            {
+                PlayerPrefs.DeleteKey(BUSINESS_PAGES_KEY + i);
+            }
+
+            PlayerPrefs.Save();
+            Debug.Log("All game progress has been reset.");
         }
     }
 } 

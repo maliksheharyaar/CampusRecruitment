@@ -447,25 +447,32 @@ public class BookManager : MonoBehaviour
     // Display a notification with rewards earned
     private void ShowRewardsNotification(int coins, int pageIndex)
     {
-        // You would implement UI for showing the notification here
-        string message = $"You earned {coins} coins";
-        
-        if (pageIndex >= 0 && pageIndex < allPages.Count)
+        if (coins > 0 || pageIndex >= 0)
         {
-            message += $" and page #{allPages[pageIndex].pageNumber}: {allPages[pageIndex].pageTitle}!";
+            string message = $"You earned {coins} coins";
+            if (pageIndex >= 0 && pageIndex < allPages.Count)
+            {
+                message += $" and page #{pageIndex + 1}: {allPages[pageIndex].pageTitle}!";
+                
+                // Update analytics with the page title
+                var analyticsManager = FindObjectOfType<AnalyticsManager>();
+                if (analyticsManager != null)
+                {
+                    analyticsManager.UpdateLastPageTitle(allPages[pageIndex].pageTitle);
+                }
+            }
+            else if (pageIndex >= 0)
+            {
+                message += " and a new page!";
+            }
+            else
+            {
+                message += "!";
+            }
+            
+            Debug.Log($"REWARD NOTIFICATION: {message}");
+            // Show the notification UI here
         }
-        else
-        {
-            message += "!";
-        }
-        
-        Debug.Log("REWARD NOTIFICATION: " + message);
-        
-        // Here you would activate a UI element to show the notification
-        // For example:
-        // rewardNotificationPanel.SetActive(true);
-        // rewardNotificationText.text = message;
-        // Invoke("HideRewardNotification", 3f);
     }
     
     // Hide the reward notification after a delay
@@ -548,6 +555,13 @@ public class BookManager : MonoBehaviour
             
             if (pageDetailContent)
                 pageDetailContent.text = selectedPage.pageContent;
+
+            // Track page view in analytics
+            var analyticsManager = FindObjectOfType<AnalyticsManager>();
+            if (analyticsManager != null)
+            {
+                analyticsManager.TrackPageView(selectedPage.pageNumber, selectedPage.pageTitle);
+            }
         }
     }
 
@@ -742,5 +756,21 @@ public class BookManager : MonoBehaviour
         PopulatePageList();
         
         Debug.Log("All data has been reset: coins and pages cleared");
+    }
+
+    // Get the title of a page by its index
+    public string GetPageTitle(int pageIndex)
+    {
+        if (pageIndex >= 0 && pageIndex < allPages.Count)
+        {
+            return allPages[pageIndex].pageTitle;
+        }
+        return null;
+    }
+
+    // Add this method to check if the craft button is enabled
+    public bool IsCraftButtonEnabled()
+    {
+        return craftBookButton != null && craftBookButton.interactable;
     }
 } 

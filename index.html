@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Analytics Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --uwindsor-blue: #00274c;
+      --uwindsor-gold: #ffcb05;
+      --uwindsor-grey: #f5f7fa;
+    }
+    body {
+      background-color: var(--uwindsor-blue);
+      color: var(--uwindsor-gold);
+    }
+    .card {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      background-color: #fff;
+    }
+    .summary-box {
+      background-color: #ffffff;
+      border-left: 5px solid var(--uwindsor-gold);
+      padding: 15px 20px;
+      margin-bottom: 15px;
+      color: #000;
+    }
+    .summary-box h4 {
+      margin: 0;
+      font-size: 1.25rem;
+      color: var(--uwindsor-blue);
+    }
+    .summary-box p {
+      margin: 0;
+      font-size: 1rem;
+      color: #333;
+    }
+    h1, h5 {
+      color: var(--uwindsor-gold);
+    }
+    .program-nav button {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-5">
+    <h1 class="mb-4 text-center">📊 Program Analytics Dashboard</h1>
+
+    <!-- Program Navigation -->
+    <div class="text-center mb-4 program-nav">
+      <button class="btn btn-warning" onclick="showProgram('business')">Business Administration</button>
+      <button class="btn btn-outline-light" onclick="showProgram('engineering')">Engineering</button>
+      <button class="btn btn-outline-light" onclick="showProgram('psychology')">Psychology</button>
+      <button class="btn btn-outline-light" onclick="showProgram('nursing')">Nursing</button>
+    </div>
+
+    <!-- User Selection (for Business Program) -->
+    <div class="text-center mb-4" id="user-select-box" style="display: none;">
+      <label for="userSelect" class="form-label">Select User:</label>
+      <select id="userSelect" class="form-select w-auto d-inline-block" onchange="updateUserData()">
+        <option value="user1">User #1</option>
+        <option value="user2">User #2</option>
+        <option value="user3">User #3</option>
+      </select>
+    </div>
+
+    <!-- Placeholder for Program Content -->
+    <div id="program-content"></div>
+  </div>
+
+  <script>
+    const usersData = {
+      user1: { started: true, completed: true, crafted: true, views: [5, 4, 3, 2, 1, 2] },
+      user2: { started: true, completed: false, crafted: false, views: [2, 1, 0, 0, 1, 0] },
+      user3: { started: false, completed: false, crafted: false, views: [0, 0, 1, 0, 0, 0] }
+    };
+
+    let currentUser = 'user1';
+
+    function showProgram(program) {
+      const content = document.getElementById("program-content");
+      const userBox = document.getElementById("user-select-box");
+
+      if (program !== "business") {
+        userBox.style.display = "none";
+        content.innerHTML = `
+          <div class="card p-4">
+            <h5 class="card-title">🚧 ${program.charAt(0).toUpperCase() + program.slice(1)} Analytics</h5>
+            <p class="text-muted">This program's analytics dashboard is currently under construction. Check back soon!</p>
+          </div>
+        `;
+        return;
+      }
+
+      userBox.style.display = "block";
+      updateUserData();
+    }
+
+    function updateUserData() {
+      currentUser = document.getElementById("userSelect").value;
+      let data = usersData[currentUser];
+
+      // Automatically mark minigame as completed if any page was viewed
+      data.completed = data.views.some(view => view > 0);
+
+
+
+      const content = document.getElementById("program-content");
+      content.innerHTML = `
+        <div class="row text-center mb-4">
+          <div class="col-md-4">
+            <div class="summary-box">
+              <h4>Minigame Started</h4>
+              <p>${data.started ? '✅ Yes' : '❌ No'}</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="summary-box">
+              <h4>Minigame Completed</h4>
+              <p>${data.completed ? '✅ Yes' : '❌ No'}</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="summary-box">
+              <h4>Book Crafted</h4>
+              <p>${data.crafted ? '✅ Yes' : '❌ No'}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card p-4 mb-4">
+          <h5 class="card-title">📘 Page Interest – View Counts</h5>
+          <canvas id="pagesChart" height="300"></canvas>
+        </div>
+      `;
+
+      setTimeout(() => {
+        const ctx = document.getElementById('pagesChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: [
+              "Year 1 (Business Fundamentals)",
+              "Co-op and Experiential Learning",
+              "Year 3 (Specialization and Advanced Topics)",
+              "Intro to Business Administration",
+              "Year 2 (Core Business Knowledge)",
+              "Year 4 (Capstone and Specialization Mastery)"
+            ],
+            datasets: [{
+              label: 'Times Viewed',
+              data: data.views,
+              backgroundColor: [
+                '#ffcb05', '#f2b705', '#e6a705', '#d99804', '#cc8904', '#bf7a03'
+              ]
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: {
+              legend: {
+                display: false
+              }
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+                ticks: {
+                  precision: 0,
+                  color: '#000'
+                }
+              },
+              y: {
+                ticks: {
+                  color: '#000'
+                }
+              }
+            }
+          }
+        });
+      }, 100);
+    }
+
+    // Load default program
+    showProgram('business');
+  </script>
+</body>
+</html>
