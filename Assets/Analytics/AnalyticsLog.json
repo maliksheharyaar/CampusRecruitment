@@ -7,7 +7,7 @@
             "minigame_completed": false,
             "book_page_unlocked": "",
             "book_crafted": false,
-            "timestamp": "2025-03-28T12:02:16.7749558Z",
+            "timestamp": "2025-03-28T13:06:50.0492571Z",
             "pages": []
         },
         {
@@ -17,104 +17,7 @@
             "minigame_completed": false,
             "book_page_unlocked": "",
             "book_crafted": false,
-            "timestamp": "2025-03-28T12:02:17.2333731Z",
-            "pages": []
-        },
-        {
-            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
-            "program": "Business",
-            "minigame_started": false,
-            "minigame_completed": true,
-            "book_page_unlocked": "Year 3 (Specialization and Advanced Topics)",
-            "book_crafted": false,
-            "timestamp": "2025-03-28T12:02:51.4825472Z",
-            "pages": [
-                {
-                    "pageNumber": 4,
-                    "pageTitle": "Year 3 (Specialization and Advanced Topics)",
-                    "viewCount": 4
-                }
-            ]
-        },
-        {
-            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
-            "program": "Business",
-            "minigame_started": true,
-            "minigame_completed": false,
-            "book_page_unlocked": "",
-            "book_crafted": false,
-            "timestamp": "2025-03-28T12:04:28.5072160Z",
-            "pages": []
-        },
-        {
-            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
-            "program": "Business",
-            "minigame_started": true,
-            "minigame_completed": false,
-            "book_page_unlocked": "",
-            "book_crafted": false,
-            "timestamp": "2025-03-28T12:04:28.8815569Z",
-            "pages": []
-        },
-        {
-            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
-            "program": "Business",
-            "minigame_started": false,
-            "minigame_completed": true,
-            "book_page_unlocked": "Year 2 (Core Business Knowledge)",
-            "book_crafted": false,
-            "timestamp": "2025-03-28T12:04:38.6814770Z",
-            "pages": [
-                {
-                    "pageNumber": 2,
-                    "pageTitle": "Year 1 (Business Fundamentals)",
-                    "viewCount": 5
-                },
-                {
-                    "pageNumber": 6,
-                    "pageTitle": "Co-op and Experiential Learning",
-                    "viewCount": 4
-                },
-                {
-                    "pageNumber": 4,
-                    "pageTitle": "Year 3 (Specialization and Advanced Topics)",
-                    "viewCount": 3
-                },
-                {
-                    "pageNumber": 1,
-                    "pageTitle": "Intro to Business Administration",
-                    "viewCount": 2
-                },
-                {
-                    "pageNumber": 3,
-                    "pageTitle": "Year 2 (Core Business Knowledge)",
-                    "viewCount": 1
-                },
-                {
-                    "pageNumber": 5,
-                    "pageTitle": "Year 4 (Capstone and Specialization Mastery)",
-                    "viewCount": 2
-                }
-            ]
-        },
-        {
-            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
-            "program": "Business",
-            "minigame_started": true,
-            "minigame_completed": false,
-            "book_page_unlocked": "",
-            "book_crafted": false,
-            "timestamp": "2025-03-28T12:22:15.1274394Z",
-            "pages": []
-        },
-        {
-            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
-            "program": "Business",
-            "minigame_started": true,
-            "minigame_completed": false,
-            "book_page_unlocked": "",
-            "book_crafted": false,
-            "timestamp": "2025-03-28T12:22:15.5823332Z",
+            "timestamp": "2025-03-28T13:06:50.4716414Z",
             "pages": []
         },
         {
@@ -122,16 +25,10 @@
             "program": "Business",
             "minigame_started": true,
             "minigame_completed": true,
-            "book_page_unlocked": "Co-op and Experiential Learning",
+            "book_page_unlocked": "Year 2 (Core Business Knowledge)",
             "book_crafted": false,
-            "timestamp": "2025-03-28T12:22:27.3860890Z",
-            "pages": [
-                {
-                    "pageNumber": 5,
-                    "pageTitle": "Year 4 (Capstone and Specialization Mastery)",
-                    "viewCount": 1
-                }
-            ]
+            "timestamp": "2025-03-28T13:07:00.0303427Z",
+            "pages": []
         }
     ]
 }

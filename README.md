@@ -116,7 +116,7 @@ A 3D web-based interactive demo showcasing a university campus environment where
    - ProBuilder
    - TextMeshPro
    - Input System (New)
-3. **Required Unity Store Assets**: 
+3. **Required Unity Store Assets**:
    - FREE CASUAL PACK SFX
    - Dialogue Editor
    - 2D Casual UI HD
@@ -125,9 +125,13 @@ A 3D web-based interactive demo showcasing a university campus environment where
    - Low Poly Modular Characters
    - Free Pixel Font - Thaleah
    - FREE Low Poly Human - RPG Character
+   - Fantasy Skybox FREE
    - Polygonal's Low-Poly Particle Pack
    - Ten Power-Ups
-   - Fantasy Skybox FREE
+   - Cool Visual Effects - Part 1 - URP Support
+   - Violet Themed UI
+   - Free Fantasy Trees
+   - Free - Casual & Relaxing Game Music Pack
    - Fantasy landscape
 
 ### Project Setup based on just cloning the project

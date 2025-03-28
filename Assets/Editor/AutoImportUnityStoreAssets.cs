@@ -22,6 +22,10 @@ public class AutoImportUnityStoreAssets
         "Fantasy Skybox FREE",
         "Polygonal's Low-Poly Particle Pack",
         "Ten Power-Ups",
+        "Cool Visual Effects - Part 1 - URP Support",
+        "Violet Themed UI",
+        "Free Fantasy Trees",
+        "Free - Casual & Relaxing Game Music Pack",
         "Fantasy landscape"
     };
 
