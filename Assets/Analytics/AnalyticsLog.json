@@ -7,7 +7,7 @@
             "minigame_completed": false,
             "book_page_unlocked": "",
             "book_crafted": false,
-            "timestamp": "2025-03-28T13:06:50.0492571Z",
+            "timestamp": "2025-03-29T19:12:30.5486736Z",
             "pages": []
         },
         {
@@ -17,7 +17,73 @@
             "minigame_completed": false,
             "book_page_unlocked": "",
             "book_crafted": false,
-            "timestamp": "2025-03-28T13:06:50.4716414Z",
+            "timestamp": "2025-03-29T19:12:30.9370271Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": true,
+            "book_page_unlocked": "Co-op and Experiential Learning",
+            "book_crafted": false,
+            "timestamp": "2025-03-29T19:12:40.9521424Z",
+            "pages": [
+                {
+                    "pageNumber": 6,
+                    "pageTitle": "Co-op and Experiential Learning",
+                    "viewCount": 1
+                }
+            ]
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-03-29T19:15:48.4376352Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-03-29T19:15:48.8059700Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": true,
+            "book_page_unlocked": "Intro to Business Administration",
+            "book_crafted": false,
+            "timestamp": "2025-03-29T19:15:57.6438650Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-03-29T19:23:14.0814584Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-03-29T19:23:14.4668092Z",
             "pages": []
         },
         {
@@ -27,7 +93,119 @@
             "minigame_completed": true,
             "book_page_unlocked": "Year 2 (Core Business Knowledge)",
             "book_crafted": false,
-            "timestamp": "2025-03-28T13:07:00.0303427Z",
+            "timestamp": "2025-03-29T19:23:25.9094961Z",
+            "pages": [
+                {
+                    "pageNumber": 3,
+                    "pageTitle": "Year 2 (Core Business Knowledge)",
+                    "viewCount": 1
+                },
+                {
+                    "pageNumber": 1,
+                    "pageTitle": "Intro to Business Administration",
+                    "viewCount": 1
+                },
+                {
+                    "pageNumber": 6,
+                    "pageTitle": "Co-op and Experiential Learning",
+                    "viewCount": 1
+                }
+            ]
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-03-29T19:35:45.6047487Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-03-29T19:35:46.0885265Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": true,
+            "book_page_unlocked": "Year 3 (Specialization and Advanced Topics)",
+            "book_crafted": false,
+            "timestamp": "2025-03-29T19:35:55.1367025Z",
+            "pages": [
+                {
+                    "pageNumber": 4,
+                    "pageTitle": "Year 3 (Specialization and Advanced Topics)",
+                    "viewCount": 1
+                }
+            ]
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-03-29T21:25:05.4884152Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-03-29T21:25:05.8967866Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": true,
+            "book_page_unlocked": "Year 1 (Business Fundamentals)",
+            "book_crafted": false,
+            "timestamp": "2025-03-29T21:25:14.7248872Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-03-29T21:26:27.8379537Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-03-29T21:26:28.1977155Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": true,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-03-29T21:26:39.6621502Z",
             "pages": []
         }
     ]

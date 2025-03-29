@@ -639,6 +639,12 @@ namespace StudentRecruitment.EndlessRunner
         {
             // Award coins to the player based on score
             int coinsAwarded = CalculateCoinsReward();
+            
+            // Save the current score to PlayerPrefs for WebGL
+            PlayerPrefs.SetInt("CurrentScore", CurrentScore);
+            PlayerPrefs.Save();
+            
+            Debug.Log($"Player won with score: {CurrentScore}, coins awarded: {coinsAwarded}");
         }
 
         private void UpdateUI(GameState state)
@@ -671,28 +677,19 @@ namespace StudentRecruitment.EndlessRunner
         // Calculate coins based on score and level progression
         public int CalculateCoinsReward()
         {
-            // Base coins for completing the level
-            int baseCoins = coinsPerCompletion;
+            // Only use the actual score as coins
+            int totalCoins = Mathf.RoundToInt(CurrentScore);
             
-            // Additional coins based on score and the base coins per score rate
-            // Use baseCoinsPerScore to give a minimum number of coins per score point
-            int scoreCoins = Mathf.Max(
-                baseCoinsPerScore, 
-                Mathf.RoundToInt(CurrentScore * scoreMultiplier)
-            );
-            
-            // Bonus coins for high scores
-            int bonusCoins = 0;
-            
-            // Add bonus tiers based on score thresholds
-            if (CurrentScore >= 50) bonusCoins += 5;
-            if (CurrentScore >= 100) bonusCoins += 10;
-            if (CurrentScore >= 200) bonusCoins += 20;
-            
-            // Sum all coin rewards
-            int totalCoins = baseCoins + scoreCoins + bonusCoins;
-            
-            Debug.Log($"Coin reward breakdown: Base={baseCoins}, Score-based={scoreCoins}, Bonus={bonusCoins}, Total={totalCoins}");
+            // Ensure minimum of 1 coin if no coins were collected
+            if (totalCoins == 0)
+            {
+                totalCoins = 1;
+                Debug.Log($"No coins earned in this run, awarding minimum reward: {totalCoins} coins");
+            }
+            else
+            {
+                Debug.Log($"Using exact score value as coin reward: {totalCoins} coins");
+            }
             
             return totalCoins;
         }

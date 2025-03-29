@@ -2981,6 +2981,11 @@ PrefabInstance:
       objectReference: {fileID: 4087595852869213236}
     - target: {fileID: 2770187149211682952, guid: f0a33f0453040c74f8eec9b12cb81125,
         type: 3}
+      propertyPath: coinsPerCompletion
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2770187149211682952, guid: f0a33f0453040c74f8eec9b12cb81125,
+        type: 3}
       propertyPath: trackSegmentsToSpawn
       value: 10
       objectReference: {fileID: 0}

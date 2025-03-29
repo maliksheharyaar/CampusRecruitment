@@ -14,6 +14,11 @@ namespace StudentRecruitment.FinalCharacterController
         [SerializeField] private Camera _playerCamera;
         public float RotationMismatch { get; private set; } = 0f;
         public bool IsRotatingToTarget { get; private set; } = false;
+        private bool isFrozen = false;
+        private Vector3 frozenPosition;
+        private Quaternion frozenRotation;
+        private Vector3 frozenVelocity;
+        private float frozenVerticalVelocity;
 
         [Header("Base Movement")]
         public float walkAcceleration = 25f;
@@ -69,9 +74,59 @@ namespace StudentRecruitment.FinalCharacterController
         }
         #endregion
 
+        #region Freeze/Unfreeze
+        public void FreezePlayer()
+        {
+            if (!isFrozen)
+            {
+                isFrozen = true;
+                frozenPosition = transform.position;
+                frozenRotation = transform.rotation;
+                frozenVelocity = _characterController.velocity;
+                frozenVerticalVelocity = _verticalVelocity;
+                
+                // Disable character controller to prevent movement
+                if (_characterController != null)
+                {
+                    _characterController.enabled = false;
+                }
+                
+                Debug.Log("[PlayerController] Player frozen");
+            }
+        }
+
+        public void UnfreezePlayer()
+        {
+            if (isFrozen)
+            {
+                isFrozen = false;
+                
+                // Re-enable character controller
+                if (_characterController != null)
+                {
+                    _characterController.enabled = true;
+                    // Restore position and velocity
+                    _characterController.Move(Vector3.zero);
+                    _verticalVelocity = frozenVerticalVelocity;
+                }
+                
+                Debug.Log("[PlayerController] Player unfrozen");
+            }
+        }
+
+        #endregion
+
         #region Update Logic
         private void Update()
         {
+            if (isFrozen)
+            {
+                // Keep player in frozen position
+                transform.position = frozenPosition;
+                transform.rotation = frozenRotation;
+                return;
+            }
+
             UpdateMovementState();
             HandleVerticalMovement();
             HandleLateralMovement();

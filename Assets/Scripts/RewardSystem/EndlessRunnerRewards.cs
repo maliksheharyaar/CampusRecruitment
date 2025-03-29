@@ -107,17 +107,27 @@ public class EndlessRunnerRewards : MonoBehaviour
     // Calculate how many coins to award
     private int CalculateCoinsReward()
     {
-        // Use only the score from the current session as the coin reward
         int coins = 0;
         if (runnerManager != null)
         {
             // Get the current score directly from the EndlessRunnerManager
             coins = Mathf.RoundToInt(runnerManager.CurrentScore);
-            Debug.Log($"Using exact score value as coin reward: {coins} coins");
+            
+            // Only apply minimum coin rule if no coins were earned in this run
+            if (coins == 0)
+            {
+                coins = 1; // Minimum reward for attempting the run
+                Debug.Log($"No coins earned in this run, awarding minimum reward: {coins} coins");
+            }
+            else
+            {
+                Debug.Log($"Using exact score value as coin reward: {coins} coins");
+            }
         }
         else
         {
             Debug.LogWarning("RunnerManager not found when calculating rewards");
+            coins = 1; // Fallback to minimum reward if manager not found
         }
 
         return coins;
@@ -147,8 +157,8 @@ public class EndlessRunnerRewards : MonoBehaviour
     // Save rewards to PlayerPrefs for BookManager to pick up
     private void SaveRewards(int coins, int pageIndex)
     {
-        // Save coins
-        GameProgress.AddCoins(coins);
+        // Save coins to PlayerPrefs for WebGL
+        PlayerPrefs.SetInt("PendingRewardCoins", coins);
         
         // Save page if earned
         if (pageIndex >= 0)
@@ -157,8 +167,15 @@ public class EndlessRunnerRewards : MonoBehaviour
             // Store the page index for BookManager to display
             PlayerPrefs.SetInt("PendingRewardPage", pageIndex);
             PlayerPrefs.SetInt("HasPendingRewards", 1);
-            PlayerPrefs.Save();
         }
+        else
+        {
+            // If no page earned, still mark that we have rewards to collect
+            PlayerPrefs.SetInt("HasPendingRewards", 1);
+        }
+        
+        // Always save PlayerPrefs explicitly for WebGL
+        PlayerPrefs.Save();
         
         Debug.Log($"Saved rewards: {coins} coins and page #{pageIndex}");
     }

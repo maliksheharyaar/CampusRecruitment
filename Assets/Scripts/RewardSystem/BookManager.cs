@@ -76,6 +76,38 @@ public class BookManager : MonoBehaviour
 
     private void Start()
     {
+        // Load saved data
+        LoadPlayerData();
+        
+        // Check for pending rewards from EndlessRunner
+        if (PlayerPrefs.GetInt("HasPendingRewards", 0) == 1)
+        {
+            int pendingCoins = PlayerPrefs.GetInt("PendingRewardCoins", 0);
+            int pendingPage = PlayerPrefs.GetInt("PendingRewardPage", -1);
+            
+            // Clear pending rewards immediately
+            PlayerPrefs.DeleteKey("HasPendingRewards");
+            PlayerPrefs.DeleteKey("PendingRewardCoins");
+            PlayerPrefs.DeleteKey("PendingRewardPage");
+            PlayerPrefs.Save(); // Explicitly save for WebGL
+            
+            // Apply rewards
+            if (pendingCoins > 0)
+            {
+                AddCoins(pendingCoins);
+            }
+            
+            if (pendingPage >= 0)
+            {
+                CollectPage(pendingPage);
+                ShowRewardsNotification(pendingCoins, pendingPage);
+            }
+            else if (pendingCoins > 0)
+            {
+                ShowRewardsNotification(pendingCoins, -1);
+            }
+        }
+        
         // Initialize UI
         UpdateUI();
         PopulatePageList();
@@ -602,6 +634,7 @@ public class BookManager : MonoBehaviour
     {
         if (bookViewPanel)
         {
+            UpdateCollectedPagesList();
             bookViewPanel.SetActive(true);
             currentPageIndex = 0;
             DisplayCurrentPage();
@@ -627,17 +660,6 @@ public class BookManager : MonoBehaviour
     // Display the current page in the book view
     private void DisplayCurrentPage()
     {
-        // Get sorted list of collected pages
-        collectedPages.Clear();
-        foreach (Page page in allPages)
-        {
-            if (page.isCollected)
-                collectedPages.Add(page);
-        }
-        
-        // Sort by page number
-        collectedPages.Sort((a, b) => a.pageNumber.CompareTo(b.pageNumber));
-
         // Make sure currentPageIndex is valid
         if (collectedPages.Count == 0)
             return;
@@ -661,6 +683,18 @@ public class BookManager : MonoBehaviour
         
         if (nextPageButton)
             nextPageButton.interactable = currentPageIndex < collectedPages.Count - 1;
+    }
+
+    // Add this method to update collected pages list
+    private void UpdateCollectedPagesList()
+    {
+        collectedPages.Clear();
+        foreach (Page page in allPages)
+        {
+            if (page.isCollected)
+                collectedPages.Add(page);
+        }
+        collectedPages.Sort((a, b) => a.pageNumber.CompareTo(b.pageNumber));
     }
 
     // Handle next page button click
@@ -716,13 +750,14 @@ public class BookManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("CurrentCoins", currentCoins);
         PlayerPrefs.SetInt("IsBookCrafted", isBookCrafted ? 1 : 0);
-
+        
         // Save collected pages
         for (int i = 0; i < allPages.Count; i++)
         {
             PlayerPrefs.SetInt($"Page_{i}_Collected", allPages[i].isCollected ? 1 : 0);
         }
-
+        
+        // Always save PlayerPrefs explicitly for WebGL
         PlayerPrefs.Save();
     }
 

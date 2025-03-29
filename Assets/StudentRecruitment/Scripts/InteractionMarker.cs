@@ -383,8 +383,25 @@ public class InteractionMarker : MonoBehaviour
 
     private System.Collections.IEnumerator LoadSceneAsync()
     {
+        // Show loading canvas before scene transition
+        LoadingCanvasManager.Instance.ShowLoadingCanvas();
+
         if (playerTransform != null)
         {
+            // Freeze player before making persistent
+            var playerController = playerTransform.GetComponent<StudentRecruitment.FinalCharacterController.PlayerController>();
+            if (playerController != null)
+            {
+                playerController.FreezePlayer();
+            }
+
+            // Make player persistent before loading scene
+            var playerPersistence = playerTransform.GetComponent<StudentRecruitment.PlayerPersistence>();
+            if (playerPersistence != null)
+            {
+                playerPersistence.MakePersistent();
+            }
+            
             PlayerPositionManager.StorePosition(playerTransform.position);
         }
 

@@ -82,6 +82,9 @@ public class PlayerSpawnHandler : MonoBehaviour
             return;
         }
 
+        // Get the player controller to unfreeze later
+        var playerController = player.GetComponent<StudentRecruitment.FinalCharacterController.PlayerController>();
+
         // Check if we have a stored position
         if (PlayerPositionManager.HasStoredPosition())
         {
@@ -146,6 +149,12 @@ public class PlayerSpawnHandler : MonoBehaviour
         else
         {
             Debug.Log("[PlayerSpawnHandler] No stored position found, player will spawn at default position");
+        }
+
+        // Unfreeze the player after position restoration
+        if (playerController != null)
+        {
+            playerController.UnfreezePlayer();
         }
     }
 
