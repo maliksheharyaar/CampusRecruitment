@@ -376,15 +376,35 @@ public class InteractionMarker : MonoBehaviour
     {
         if (!isTransitioning && isInInteractionRange)
         {
-            isTransitioning = true;
+            Debug.Log("[InteractionMarker] Starting scene transition");
             StartCoroutine(LoadSceneAsync());
+        }
+        else if (isTransitioning)
+        {
+            Debug.LogWarning("[InteractionMarker] Scene transition already in progress, skipping");
+        }
+        else if (!isInInteractionRange)
+        {
+            Debug.LogWarning("[InteractionMarker] Player not in interaction range");
         }
     }
 
     private System.Collections.IEnumerator LoadSceneAsync()
     {
+        if (isTransitioning)
+        {
+            Debug.LogWarning("[InteractionMarker] Scene transition already in progress, skipping");
+            yield break;
+        }
+
+        isTransitioning = true;
+        Debug.Log("[InteractionMarker] Scene transition started");
+
         // Show loading canvas before scene transition
-        LoadingCanvasManager.Instance.ShowLoadingCanvas();
+        if (LoadingCanvasManager.Instance != null)
+        {
+            LoadingCanvasManager.Instance.ShowLoadingCanvas();
+        }
 
         if (playerTransform != null)
         {
@@ -415,6 +435,7 @@ public class InteractionMarker : MonoBehaviour
         }
         
         asyncLoad.allowSceneActivation = true;
+        Debug.Log("[InteractionMarker] Scene transition completed");
         isTransitioning = false;
     }
 
@@ -461,5 +482,6 @@ public class InteractionMarker : MonoBehaviour
             markerButton.onClick.RemoveListener(InvokeClick);
         }
         onClick.RemoveAllListeners();
+        isTransitioning = false; // Reset transition state when destroyed
     }
 } 

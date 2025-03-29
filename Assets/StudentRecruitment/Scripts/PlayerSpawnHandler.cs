@@ -36,22 +36,27 @@ public class PlayerSpawnHandler : MonoBehaviour
         if (scene.name == "MainScene")
         {
             // Start position restoration after a short delay to ensure player is spawned
-            StartCoroutine(RestorePlayerPositionWithDelay());
+            if (!isRestoringPosition)
+            {
+                StartCoroutine(RestorePlayerPositionWithDelay());
+            }
+            else
+            {
+                Debug.LogWarning("[PlayerSpawnHandler] Position restoration already in progress, skipping");
+            }
+        }
+        else
+        {
+            // For other scenes, ensure loading canvas is hidden
+            if (LoadingCanvasManager.Instance != null)
+            {
+                LoadingCanvasManager.Instance.HideLoadingCanvas();
+            }
         }
     }
 
     private System.Collections.IEnumerator RestorePlayerPositionWithDelay()
     {
-        // Show loading canvas if it exists
-        if (loadingCanvas != null)
-        {
-            loadingCanvas.SetActive(true);
-        }
-
-        // Wait for a short time to ensure player is spawned at origin
-        yield return new WaitForSeconds(teleportDelay);
-
-        // Prevent multiple simultaneous restorations
         if (isRestoringPosition)
         {
             Debug.LogWarning("[PlayerSpawnHandler] Position restoration already in progress, skipping");
@@ -59,17 +64,28 @@ public class PlayerSpawnHandler : MonoBehaviour
         }
 
         isRestoringPosition = true;
+
+        // Show loading canvas if it exists
+        if (LoadingCanvasManager.Instance != null)
+        {
+            LoadingCanvasManager.Instance.ShowLoadingCanvas();
+        }
+
+        // Wait for a short time to ensure player is spawned at origin
+        yield return new WaitForSeconds(teleportDelay);
+
         RestorePlayerPosition();
-        isRestoringPosition = false;
 
         // Keep the loading screen visible for the specified duration
         yield return new WaitForSeconds(loadingScreenDuration);
 
         // Hide loading canvas after the duration
-        if (loadingCanvas != null)
+        if (LoadingCanvasManager.Instance != null)
         {
-            loadingCanvas.SetActive(false);
+            LoadingCanvasManager.Instance.HideLoadingCanvas();
         }
+
+        isRestoringPosition = false;
     }
 
     private void RestorePlayerPosition()
@@ -155,6 +171,11 @@ public class PlayerSpawnHandler : MonoBehaviour
         if (playerController != null)
         {
             playerController.UnfreezePlayer();
+            Debug.Log("[PlayerSpawnHandler] Player unfrozen after position restoration");
+        }
+        else
+        {
+            Debug.LogWarning("[PlayerSpawnHandler] PlayerController not found, player may remain frozen");
         }
     }
 

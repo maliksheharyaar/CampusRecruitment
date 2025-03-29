@@ -1,10 +1,13 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace StudentRecruitment
 {
     public class PlayerPersistence : MonoBehaviour
     {
         private static PlayerPersistence instance;
+        public static PlayerPersistence Instance => instance;
+
         private bool isPersistent = false;
 
         private void Awake()
@@ -12,9 +15,11 @@ namespace StudentRecruitment
             if (instance == null)
             {
                 instance = this;
+                Debug.Log("[PlayerPersistence] Initialized as singleton");
             }
             else
             {
+                Debug.Log("[PlayerPersistence] Destroying duplicate instance");
                 Destroy(gameObject);
             }
         }
@@ -23,9 +28,9 @@ namespace StudentRecruitment
         {
             if (!isPersistent)
             {
-                DontDestroyOnLoad(gameObject);
                 isPersistent = true;
-                Debug.Log("Player is now persistent across scenes");
+                DontDestroyOnLoad(gameObject);
+                Debug.Log("[PlayerPersistence] Player made persistent");
             }
         }
 
@@ -34,7 +39,16 @@ namespace StudentRecruitment
             if (isPersistent)
             {
                 isPersistent = false;
-                Debug.Log("Player persistence removed");
+                Debug.Log("[PlayerPersistence] Player persistence removed");
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (instance == this)
+            {
+                instance = null;
+                Debug.Log("[PlayerPersistence] Instance destroyed");
             }
         }
     }

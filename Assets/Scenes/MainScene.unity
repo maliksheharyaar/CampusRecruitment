@@ -3801,6 +3801,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 792978308255539617, guid: 0acfef363c53d7e41b86b9e64742ef4e,
         type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 792978308255539617, guid: 0acfef363c53d7e41b86b9e64742ef4e,
+        type: 3}
       propertyPath: m_UpdateMode
       value: 0
       objectReference: {fileID: 0}
@@ -3859,6 +3864,11 @@ PrefabInstance:
       propertyPath: m_RequiresOpaqueTextureOption
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 3222794675987309143, guid: 0acfef363c53d7e41b86b9e64742ef4e,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3348090605497928959, guid: 0acfef363c53d7e41b86b9e64742ef4e,
         type: 3}
       propertyPath: m_Name
@@ -3878,7 +3888,7 @@ PrefabInstance:
         type: 3}
       propertyPath: groundCheckPoint
       value: 
-      objectReference: {fileID: 1683675118}
+      objectReference: {fileID: 0}
     - target: {fileID: 4776490421478719568, guid: 0acfef363c53d7e41b86b9e64742ef4e,
         type: 3}
       propertyPath: _groundedLayers.m_Bits
@@ -3986,11 +3996,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 9099640075852172759, guid: 0acfef363c53d7e41b86b9e64742ef4e,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1683675118}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3348090605497928959, guid: 0acfef363c53d7e41b86b9e64742ef4e,
         type: 3}
@@ -9551,12 +9557,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!4 &1495040083 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 9099640075852172759, guid: 0acfef363c53d7e41b86b9e64742ef4e,
-    type: 3}
-  m_PrefabInstance: {fileID: 772161115}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1495040084
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11675,37 +11675,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 89854880}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1683675117
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1683675118}
-  m_Layer: 6
-  m_Name: GroundCheck
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1683675118
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1683675117}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1495040083}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1709239796
 GameObject:
   m_ObjectHideFlags: 0
