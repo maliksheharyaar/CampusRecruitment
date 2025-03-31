@@ -339,6 +339,7 @@ namespace StudentRecruitment.EndlessRunner
             // Position it before the turn trigger (farther back from the start of the segment)
             centeringTrigger.transform.localPosition = new Vector3(0, 0, -10f);
             centeringTrigger.transform.localRotation = Quaternion.identity;
+            centeringTrigger.transform.localScale = new Vector3(0.550000012f, 1f, 3.5999999f); // Set exact scale
             centeringTrigger.tag = "CenterLane"; // Special tag for lane centering
             
             // Add a box collider as trigger

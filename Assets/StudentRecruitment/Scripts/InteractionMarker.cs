@@ -372,7 +372,7 @@ public class InteractionMarker : MonoBehaviour
         }
     }
 
-    private void OnInteractionTriggered()
+    public void OnInteractionTriggered()
     {
         if (!isTransitioning && isInInteractionRange)
         {
@@ -408,10 +408,20 @@ public class InteractionMarker : MonoBehaviour
 
         if (playerTransform != null)
         {
-            // Freeze player before making persistent
+            // Make sure player is visible and controller is enabled
             var playerController = playerTransform.GetComponent<StudentRecruitment.FinalCharacterController.PlayerController>();
             if (playerController != null)
             {
+                playerController.enabled = true; // Enable controller first
+                
+                // Make player visible
+                Renderer[] renderers = playerTransform.GetComponentsInChildren<Renderer>();
+                foreach (Renderer renderer in renderers)
+                {
+                    renderer.enabled = true;
+                }
+                
+                // Now freeze the player for the transition
                 playerController.FreezePlayer();
             }
 

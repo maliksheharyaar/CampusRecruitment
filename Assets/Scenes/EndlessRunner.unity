@@ -96,7 +96,8 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 2907f667c62bf6445b8748a28ee164d7,
+    type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -697,8 +698,8 @@ Transform:
   m_GameObject: {fileID: 890466960}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 1, z: -1.5}
-  m_LocalScale: {x: 4, y: 6, z: 3}
+  m_LocalPosition: {x: 0.00095456, y: 1, z: -1.5}
+  m_LocalScale: {x: 5.9092, y: 8.8638, z: 4.4319}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1676923412}
@@ -13078,7 +13079,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -0.002, y: 1, z: -1.5}
-  m_LocalScale: {x: 0.9139959, y: 0, z: 0.42597368}
+  m_LocalScale: {x: 1.3502462, y: 0, z: 0.62929094}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1676923412}
@@ -14736,7 +14737,7 @@ PrefabInstance:
     - target: {fileID: 2770187149211682952, guid: f0a33f0453040c74f8eec9b12cb81125,
         type: 3}
       propertyPath: trackSegmentsToSpawn
-      value: 10
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 2770187149211682952, guid: f0a33f0453040c74f8eec9b12cb81125,
         type: 3}

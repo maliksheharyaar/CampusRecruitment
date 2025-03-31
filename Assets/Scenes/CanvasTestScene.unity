@@ -1338,7 +1338,7 @@ MonoBehaviour:
       These placements are paid and provide invaluable real-world experience \u2013
       by the end, co-op grads have a full year of work experience on their resume."
     isCollected: 0
-  requiredCoinsForBook: 20
+  requiredCoinsForBook: 5
   coinCountText: {fileID: 1617929846}
   pageCountText: {fileID: 661081155}
   craftBookButton: {fileID: 2024080494}

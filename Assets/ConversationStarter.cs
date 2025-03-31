@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DialogueEditor;
 using UnityEngine;
 using StudentRecruitment.FinalCharacterController;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Collider))]
 public class ConversationStarter : MonoBehaviour
@@ -18,13 +19,21 @@ public class ConversationStarter : MonoBehaviour
     [SerializeField] private Animator npcAnimator;
     [SerializeField] private string talkingParameterName = "IsTalking";
     
+    [Header("Rotation Settings")]
+    [SerializeField] private float rotationSpeed = 5f; // Speed of rotation in degrees per second
+    
     private PlayerController _playerController;
     private GameObject _playerObject;
     private bool _isInConversation = false;
     private CursorManager _cursorManager;
+    private Quaternion _initialRotation; // Store the initial rotation
+    private Coroutine _rotationCoroutine; // Store the current rotation coroutine
 
     private void Start()
     {
+        // Store initial rotation
+        _initialRotation = transform.rotation;
+        
         // Find cursor manager in current scene
         _cursorManager = FindObjectOfType<CursorManager>();
         
@@ -108,6 +117,24 @@ public class ConversationStarter : MonoBehaviour
             _isInConversation = false;
             return;
         }
+
+        // Make NPC face the player smoothly
+        if (_playerObject != null)
+        {
+            // Calculate direction to player
+            Vector3 directionToPlayer = _playerObject.transform.position - transform.position;
+            directionToPlayer.y = 0; // Keep the rotation only on the Y axis
+            
+            // Calculate target rotation
+            Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
+            
+            // Start smooth rotation
+            if (_rotationCoroutine != null)
+            {
+                StopCoroutine(_rotationCoroutine);
+            }
+            _rotationCoroutine = StartCoroutine(SmoothRotate(targetRotation));
+        }
         
         // Start the conversation
         ConversationManager.Instance.StartConversation(_conversation);
@@ -163,12 +190,29 @@ public class ConversationStarter : MonoBehaviour
         }
     }
     
+    private IEnumerator SmoothRotate(Quaternion targetRotation)
+    {
+        while (Quaternion.Angle(transform.rotation, targetRotation) > 0.1f)
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            yield return null;
+        }
+        transform.rotation = targetRotation;
+    }
+    
     private void HandleConversationEnd()
     {
         if (!_isInConversation) return;
         
         // Stop NPC talking animation
         SetNPCTalking(false);
+        
+        // Return to initial rotation smoothly
+        if (_rotationCoroutine != null)
+        {
+            StopCoroutine(_rotationCoroutine);
+        }
+        _rotationCoroutine = StartCoroutine(SmoothRotate(_initialRotation));
         
         // Re-enable player control
         if (_playerController != null)
@@ -202,4 +246,4 @@ public class ConversationStarter : MonoBehaviour
         // Reset conversation state
         _isInConversation = false;
     }
-} 
+}
