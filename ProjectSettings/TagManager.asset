@@ -19,6 +19,7 @@ TagManager:
   - PageDetailPanel
   - FxTemporaire
   - CenterLane
+  - Boulder
   layers:
   - Default
   - TransparentFX

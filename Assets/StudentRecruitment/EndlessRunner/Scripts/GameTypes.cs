@@ -12,7 +12,8 @@ namespace StudentRecruitment.EndlessRunner
         Paused = 1,
         GameOver = 2,
         Win = 3,
-        MainMenu = 4
+        MainMenu = 4,
+        Instructions = 5
     }
     
     // PowerUpType enum - defines the types of power-ups available in the game

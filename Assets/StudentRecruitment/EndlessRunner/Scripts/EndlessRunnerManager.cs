@@ -127,8 +127,8 @@ namespace StudentRecruitment.EndlessRunner
             // Start the game (this initializes speed)
             StartGame();
 
-            // Update UI
-            UpdateUI(GameState.Running);
+            // Update UI to Instructions state initially
+            UpdateGameState(GameState.Instructions);
             
             // Double-ensure the player is moving
             StartCoroutine(EnsurePlayerMoving());
@@ -153,6 +153,31 @@ namespace StudentRecruitment.EndlessRunner
             
             // Start the culling coroutine
             StartCoroutine(CullDistantObjects());
+
+            // Ensure boulder is not moving initially
+            if (boulder != null)
+            {
+                // Position boulder behind first track segment
+                boulder.transform.position = new Vector3(0, boulder.transform.position.y, -10f);
+                
+                // Activate boulder but don't start chasing yet
+                boulder.SetActive(true);
+                
+                // Stop chasing behavior if it has BoulderController
+                BoulderController boulderController = boulder.GetComponent<BoulderController>();
+                if (boulderController != null)
+                {
+                    boulderController.StopChasing();
+                    
+                    // Also stop any rigidbody movement
+                    Rigidbody boulderRigidbody = boulder.GetComponent<Rigidbody>();
+                    if (boulderRigidbody != null)
+                    {
+                        boulderRigidbody.velocity = Vector3.zero;
+                        boulderRigidbody.angularVelocity = Vector3.zero;
+                    }
+                }
+            }
         }
         
         private IEnumerator EnsurePlayerMoving()
@@ -561,23 +586,6 @@ namespace StudentRecruitment.EndlessRunner
                 playerController.Jump(); // Just to test input system
             }
 
-            // Start boulder chase if boulder exists
-            if (boulder != null)
-            {
-                // Position boulder behind first track segment
-                boulder.transform.position = new Vector3(0, boulder.transform.position.y, -10f);
-                
-                // Activate boulder
-                boulder.SetActive(true);
-                
-                // Start chasing behavior if it has BoulderController
-                BoulderController boulderController = boulder.GetComponent<BoulderController>();
-                if (boulderController != null)
-                {
-                    boulderController.StartChasing();
-                }
-            }
-
             gameInProgress = true;
         }
 
@@ -665,7 +673,25 @@ namespace StudentRecruitment.EndlessRunner
         // Public method to update game state
         public void UpdateGameState(GameState newState)
         {
-            UpdateUI(newState);
+            if (CurrentGameState != newState)
+            {
+                // If we're transitioning from Instructions to Running, start the boulder
+                if (CurrentGameState == GameState.Instructions && newState == GameState.Running)
+                {
+                    if (boulder != null)
+                    {
+                        BoulderController boulderController = boulder.GetComponent<BoulderController>();
+                        if (boulderController != null)
+                        {
+                            boulderController.StartChasing();
+                            Debug.Log("[EndlessRunnerManager] Starting boulder chase after instructions");
+                        }
+                    }
+                }
+                
+                CurrentGameState = newState;
+                OnGameStateChanged?.Invoke(newState);
+            }
         }
 
         // Add coins to the score

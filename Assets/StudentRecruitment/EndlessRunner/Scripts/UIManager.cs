@@ -16,6 +16,10 @@ namespace StudentRecruitment.EndlessRunner
         [SerializeField] private GameObject gameOverUI;
         [SerializeField] private GameObject winUI;
         [SerializeField] private GameObject pauseMenuUI;
+        [SerializeField] private GameObject instructionsUI;
+        
+        [Header("Instructions UI")]
+        [SerializeField] private Button startButton;
         
         [Header("In-Game UI")]
         [SerializeField] private TextMeshProUGUI scoreText;
@@ -69,11 +73,47 @@ namespace StudentRecruitment.EndlessRunner
             runnerManager = FindObjectOfType<EndlessRunnerManager>();
             playerController = FindObjectOfType<RunnerController>();
             
-            // Hide all non-main panels initially
+            // Disable player movement immediately
+            if (playerController != null)
+            {
+                playerController.enabled = false;
+                Debug.Log("[UIManager] Player movement disabled on scene load");
+            }
+            
+            // Disable boulder movement by setting game state to paused
+            if (runnerManager != null)
+            {
+                runnerManager.UpdateGameState(GameState.Paused);
+                Debug.Log("[UIManager] Game state set to paused on scene load");
+            }
+            
+            // Hide all UI panels initially
+            if (mainGameUI != null) mainGameUI.SetActive(false);
             if (gameOverUI != null) gameOverUI.SetActive(false);
             if (winUI != null) winUI.SetActive(false);
             if (pauseMenuUI != null) pauseMenuUI.SetActive(false);
             if (invincibilityIndicator != null) invincibilityIndicator.SetActive(false);
+            if (hudPanel != null) hudPanel.SetActive(false);
+            
+            // Show instructions UI initially and set up start button
+            if (instructionsUI != null)
+            {
+                instructionsUI.SetActive(true);
+                // Set up start button listener
+                if (startButton != null)
+                {
+                    startButton.onClick.AddListener(OnStartButtonClicked);
+                }
+                Debug.Log("[UIManager] Instructions UI enabled on scene load");
+            }
+            else
+            {
+                Debug.LogError("[UIManager] Instructions UI reference is missing!");
+            }
+            
+            // Pause the game
+            Time.timeScale = 0f;
+            Debug.Log("[UIManager] Game paused on scene load");
         }
         
         private void Start()
@@ -101,11 +141,18 @@ namespace StudentRecruitment.EndlessRunner
             if (invincibilitySlider != null) invincibilitySlider.gameObject.SetActive(false);
             if (speedBoostSlider != null) speedBoostSlider.gameObject.SetActive(false);
             
-            // Hide all game state panels
-            SetAllGamePanelsInactive();
+            // Hide game state panels except instructions
+            if (victoryPanel != null) victoryPanel.SetActive(false);
+            if (pauseMenuUI != null) pauseMenuUI.SetActive(false);
             
             // Show HUD
             if (hudPanel != null) hudPanel.SetActive(true);
+            
+            // Pause game while instructions are showing
+            if (instructionsUI != null && instructionsUI.activeSelf)
+            {
+                PauseGameForInstructions();
+            }
         }
         
         private void OnEnable()
@@ -280,11 +327,6 @@ namespace StudentRecruitment.EndlessRunner
                     duration = EndlessRunnerManager.Instance.PowerUpDuration;
                 }
                 
-                if (mainGameUI != null) mainGameUI.SetActive(true);
-                if (gameOverUI != null) gameOverUI.SetActive(false);
-                if (winUI != null) winUI.SetActive(false);
-                if (pauseMenuUI != null) pauseMenuUI.SetActive(false);
-                
                 // Cancel existing coroutine if one is running
                 if (coroutine != null)
                 {
@@ -364,12 +406,19 @@ namespace StudentRecruitment.EndlessRunner
         // Update UI based on game state
         public void UpdateGameState(GameState newState)
         {
-            // Hide all panels first
-            HideAllPanels();
+            // If we're showing instructions, don't hide all panels
+            if (newState != GameState.Instructions)
+            {
+                // Hide all panels first
+                HideAllPanels();
+            }
             
             // Show appropriate panel
             switch (newState)
-            {
+            {                
+                case GameState.Instructions:
+                    ShowInstructions();
+                    break;
                 case GameState.Running:
                     if (mainGameUI != null) mainGameUI.SetActive(true);
                     break;
@@ -385,6 +434,23 @@ namespace StudentRecruitment.EndlessRunner
                 case GameState.Paused:
                     if (pauseMenuUI != null) pauseMenuUI.SetActive(true);
                     break;
+                    
+
+            }
+        }
+        
+        // Show instructions panel
+        private void ShowInstructions()
+        {
+            if (instructionsUI != null)
+            {
+                instructionsUI.SetActive(true);
+                PauseGameForInstructions();
+                Debug.Log("[UIManager] Instructions panel shown");
+            }
+            else
+            {
+                Debug.LogError("[UIManager] Instructions UI reference is missing!");
             }
         }
         
@@ -440,6 +506,7 @@ namespace StudentRecruitment.EndlessRunner
         {
             if (victoryPanel != null) victoryPanel.SetActive(false);
             if (pauseMenuUI != null) pauseMenuUI.SetActive(false);
+            // Don't disable instructions panel here
         }
         
         // Restart button handler
@@ -573,6 +640,106 @@ namespace StudentRecruitment.EndlessRunner
             
             // Hide the main game UI
             if (mainGameUI != null) mainGameUI.SetActive(false);
+        }
+        
+        // New method to handle start button click
+        private void OnStartButtonClicked()
+        {
+            if (instructionsUI != null)
+            {
+                instructionsUI.SetActive(false);
+                
+                // Start boulder movement
+                if (runnerManager != null)
+                {
+                    GameObject boulder = GameObject.FindGameObjectWithTag("Boulder");
+                    if (boulder != null)
+                    {
+                        BoulderController boulderController = boulder.GetComponent<BoulderController>();
+                        if (boulderController != null)
+                        {
+                            boulderController.StartChasing();
+                            Debug.Log("[UIManager] Starting boulder chase after instructions disabled");
+                        }
+                    }
+                }
+                
+                ResumeGameFromInstructions();
+            }
+        }
+        
+        // New method to pause game for instructions
+        private void PauseGameForInstructions()
+        {
+            // Pause the game
+            Time.timeScale = 0f;
+            
+            // Disable player movement
+            if (playerController != null)
+            {
+                playerController.enabled = false;
+            }
+            
+            // Pause the runner manager by updating game state
+            if (runnerManager != null)
+            {
+                runnerManager.UpdateGameState(GameState.Paused);
+            }
+            
+            // Pause music if there's an audio manager
+            var audioManager = FindObjectOfType<AudioManager>();
+            if (audioManager != null)
+            {
+                // Find the background music source and pause it
+                AudioSource[] audioSources = audioManager.GetComponents<AudioSource>();
+                foreach (AudioSource source in audioSources)
+                {
+                    if (source.clip != null && source.clip.name.Contains("Background"))
+                    {
+                        source.Pause();
+                        break;
+                    }
+                }
+            }
+            
+            Debug.Log("[UIManager] Game paused for instructions");
+        }
+
+        // New method to resume game from instructions
+        private void ResumeGameFromInstructions()
+        {
+            // Resume the game
+            Time.timeScale = 1f;
+            
+            // Re-enable player movement
+            if (playerController != null)
+            {
+                playerController.enabled = true;
+            }
+            
+            // Resume the runner manager by updating game state
+            if (runnerManager != null)
+            {
+                runnerManager.UpdateGameState(GameState.Running);
+            }
+            
+            // Resume music if there's an audio manager
+            var audioManager = FindObjectOfType<AudioManager>();
+            if (audioManager != null)
+            {
+                // Find the background music source and resume it
+                AudioSource[] audioSources = audioManager.GetComponents<AudioSource>();
+                foreach (AudioSource source in audioSources)
+                {
+                    if (source.clip != null && source.clip.name.Contains("Background"))
+                    {
+                        source.UnPause();
+                        break;
+                    }
+                }
+            }
+            
+            Debug.Log("[UIManager] Game resumed from instructions");
         }
     }
 } 
