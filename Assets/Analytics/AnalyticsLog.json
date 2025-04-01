@@ -2725,6 +2725,66 @@
             "book_crafted": false,
             "timestamp": "2025-04-01T04:05:26.1529474Z",
             "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-04-01T04:29:41.1852500Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-04-01T04:30:07.6727595Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-04-01T04:30:31.6998378Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-04-01T04:30:49.8939800Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-04-01T04:32:10.8161002Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": true,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-04-01T04:32:33.5443417Z",
+            "pages": []
         }
     ]
 }

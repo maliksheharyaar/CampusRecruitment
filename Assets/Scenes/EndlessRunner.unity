@@ -13855,6 +13855,11 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Boulder
       objectReference: {fileID: 0}
+    - target: {fileID: 2211200731208380195, guid: 152339befaef82f4b85b8ef894f352eb,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3095351073919719320, guid: 152339befaef82f4b85b8ef894f352eb,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -13910,6 +13915,21 @@ PrefabInstance:
       propertyPath: rollingSound
       value: 
       objectReference: {fileID: 8300000, guid: cbd5ee476a488444aaeb06b7e1fb04e0, type: 3}
+    - target: {fileID: 8291243772760151205, guid: 152339befaef82f4b85b8ef894f352eb,
+        type: 3}
+      propertyPath: maxFollowDistance
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291243772760151205, guid: 152339befaef82f4b85b8ef894f352eb,
+        type: 3}
+      propertyPath: targetCatchUpDistance
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291243772760151205, guid: 152339befaef82f4b85b8ef894f352eb,
+        type: 3}
+      propertyPath: catchUpSpeedMultiplier
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
