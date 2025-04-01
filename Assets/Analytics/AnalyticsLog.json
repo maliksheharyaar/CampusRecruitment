@@ -2785,6 +2785,46 @@
             "book_crafted": false,
             "timestamp": "2025-04-01T04:32:33.5443417Z",
             "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-04-01T04:45:16.3736330Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": true,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-04-01T04:45:39.7849342Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-04-01T04:56:55.1485911Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": true,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-04-01T04:57:19.8301014Z",
+            "pages": []
         }
     ]
 }

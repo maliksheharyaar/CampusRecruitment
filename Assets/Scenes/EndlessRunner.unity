@@ -14881,6 +14881,11 @@ PrefabInstance:
       objectReference: {fileID: 4545753712651915488}
     - target: {fileID: 2770187149211682952, guid: f0a33f0453040c74f8eec9b12cb81125,
         type: 3}
+      propertyPath: enableTurns
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2770187149211682952, guid: f0a33f0453040c74f8eec9b12cb81125,
+        type: 3}
       propertyPath: trackParent
       value: 
       objectReference: {fileID: 682471637}
