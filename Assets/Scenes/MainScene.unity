@@ -4355,12 +4355,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &833026912 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3434756391974497855, guid: 52f7923d6c5ffd949a23d2acb39e7486,
-    type: 3}
-  m_PrefabInstance: {fileID: 1546570466}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &858335979 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6304287319919250653, guid: e1d0f8be106cf1c4192f98d1ed2bc517,
@@ -8289,7 +8283,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   m_UseGeometry: 0
   m_DefaultArea: 0
-  m_GenerateLinks: 0
+  m_GenerateLinks: 1
   m_IgnoreNavMeshAgent: 1
   m_IgnoreNavMeshObstacle: 1
   m_OverrideTileSize: 0
@@ -8298,7 +8292,7 @@ MonoBehaviour:
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: deb0af8b4fa158146b61598dc320fa30, type: 2}
-  m_BuildHeightMesh: 1
+  m_BuildHeightMesh: 0
 --- !u!1 &1379507935
 GameObject:
   m_ObjectHideFlags: 0
@@ -10186,7 +10180,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerObject: {fileID: 1495040064}
-  targetObject: {fileID: 833026912}
+  targetObject: {fileID: 1529338148}
   pathMaterial: {fileID: 2100000, guid: a21be02ec1c49e546905933c65e08834, type: 2}
   lineWidth: 0.3
   updateRate: 0.01
@@ -10317,6 +10311,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1529338148 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2805649582431696640, guid: 52f7923d6c5ffd949a23d2acb39e7486,
+    type: 3}
+  m_PrefabInstance: {fileID: 1546570466}
+  m_PrefabAsset: {fileID: 0}
 --- !u!64 &1538300686
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -12779,7 +12779,7 @@ PrefabInstance:
     - target: {fileID: 4433706438658728116, guid: 2da156fd4e8d760419c2a201de93e939,
         type: 3}
       propertyPath: ScrollSpeed
-      value: 1.3
+      value: 1.1
       objectReference: {fileID: 0}
     - target: {fileID: 4433706438658728116, guid: 2da156fd4e8d760419c2a201de93e939,
         type: 3}
@@ -14209,7 +14209,7 @@ GameObject:
   - component: {fileID: 1912333040}
   m_Layer: 9
   m_Name: OdetteFoundation
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -30442,7 +30442,7 @@ PrefabInstance:
     - target: {fileID: 5791488418395652463, guid: 68499d292f583574dad71d5deb6b6745,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
