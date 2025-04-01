@@ -2475,6 +2475,86 @@
                     "viewCount": 1
                 }
             ]
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-04-01T01:32:04.2775660Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": true,
+            "book_page_unlocked": "Year 3 (Specialization and Advanced Topics)",
+            "book_crafted": false,
+            "timestamp": "2025-04-01T01:32:29.2935250Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-04-01T01:35:50.2073975Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-04-01T01:37:34.3265382Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-04-01T03:12:10.3594769Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": true,
+            "book_page_unlocked": "Year 4 (Capstone and Specialization Mastery)",
+            "book_crafted": false,
+            "timestamp": "2025-04-01T03:12:34.1726618Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": false,
+            "book_page_unlocked": "",
+            "book_crafted": false,
+            "timestamp": "2025-04-01T03:49:25.8331106Z",
+            "pages": []
+        },
+        {
+            "user_id": "15a13c4f-f513-40c1-9f86-631c849f6da0",
+            "program": "Business",
+            "minigame_started": true,
+            "minigame_completed": true,
+            "book_page_unlocked": "Co-op and Experiential Learning",
+            "book_crafted": false,
+            "timestamp": "2025-04-01T03:49:47.9091733Z",
+            "pages": []
         }
     ]
 }

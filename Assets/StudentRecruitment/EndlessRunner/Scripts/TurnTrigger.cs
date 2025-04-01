@@ -8,6 +8,7 @@ namespace StudentRecruitment.EndlessRunner
     {
         [SerializeField] private bool isLeftTurn = true;
         [SerializeField] private float turnAngle = 90f; // Default to 90 degrees
+        [SerializeField] private float turnCooldown = 2f; // Cooldown period after turn
 
         // Visual indicator for debugging in editor
         [SerializeField] private bool showDebugVisuals = true;
@@ -17,6 +18,10 @@ namespace StudentRecruitment.EndlessRunner
         
         // Reference to the camera controller
         private RunnerCameraController cameraController;
+        
+        // Flag to track if turn is in progress
+        private bool isTurnInProgress = false;
+        private bool isInCooldown = false;
 
         // Constructor and initialization
         private void Awake()
@@ -33,9 +38,12 @@ namespace StudentRecruitment.EndlessRunner
             // Check if this is the player entering the turn trigger
             RunnerController player = other.GetComponent<RunnerController>();
             
-            if (player != null)
+            if (player != null && !isTurnInProgress && !isInCooldown)
             {
                 Debug.Log($"Player entered turn trigger: {gameObject.name}");
+                
+                // Set turn in progress flag
+                isTurnInProgress = true;
                 
                 // Disable player side-to-side movement when entering turn
                 player.ForceMiddleLane();
@@ -54,7 +62,7 @@ namespace StudentRecruitment.EndlessRunner
             // Check if this is the player exiting the turn trigger
             RunnerController player = other.GetComponent<RunnerController>();
             
-            if (player != null)
+            if (player != null && isTurnInProgress)
             {
                 Debug.Log($"Player exited turn trigger: {gameObject.name}");
                 
@@ -63,7 +71,19 @@ namespace StudentRecruitment.EndlessRunner
                 {
                     cameraController.StartReattach();
                 }
+                
+                // Reset turn in progress flag and start cooldown
+                isTurnInProgress = false;
+                StartCoroutine(StartCooldown());
             }
+        }
+
+        // Coroutine to handle the cooldown period
+        private IEnumerator StartCooldown()
+        {
+            isInCooldown = true;
+            yield return new WaitForSeconds(turnCooldown);
+            isInCooldown = false;
         }
 
         // Create visual indicators for debugging turn direction
